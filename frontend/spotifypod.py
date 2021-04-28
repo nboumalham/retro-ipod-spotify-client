@@ -18,12 +18,12 @@ import os
 LARGEFONT =("ChicagoFLF", 90) 
 MED_FONT =("ChicagoFLF", 70) 
 SCALE = 1
-SPOT_GREEN = "#1DB954"
-SPOT_BLACK = "#191414"
+SPOT_GREEN = "#272324"
+SPOT_BLACK = "#C8C5C0"
 SPOT_WHITE = "#FFFFFF"
 
-UDP_IP = "127.0.0.1"
-UDP_PORT = 9090
+UDP_IP = "localhost"
+UDP_PORT = 8005
 
 DIVIDER_HEIGHT = 3
 
@@ -101,7 +101,7 @@ class tkinterApp(tk.Tk):
    
         # iterating through a tuple consisting 
         # of the different page layouts 
-        for F in (StartPage, NowPlayingFrame, SearchFrame): 
+        for F in (StartPage, NowPlayingFrame, SearchFrame, AboutFrame): 
    
             frame = F(container, self) 
    
@@ -209,6 +209,7 @@ class SearchFrame(tk.Frame):
         loading_text = "Loading..." if loading else ""
         self.loading_label.configure(text=loading_text)
 
+
 class NowPlayingFrame(tk.Frame): 
     def __init__(self, parent, controller):  
         tk.Frame.__init__(self, parent) 
@@ -306,7 +307,7 @@ class StartPage(tk.Frame):
         self.configure(bg=SPOT_BLACK)
         header_container = tk.Canvas(self, bg=SPOT_BLACK, highlightthickness=0, relief='ridge')
         header_container.grid(sticky='we')
-        self.header_label = tk.Label(header_container, text ="sPot", font = LARGEFONT, background=SPOT_BLACK, foreground=SPOT_GREEN) 
+        self.header_label = tk.Label(header_container, text ="piPod", font = LARGEFONT, background=SPOT_BLACK, foreground=SPOT_GREEN) 
         self.header_label.grid(sticky='we', column=1, row=0, padx=(0, 10))
         self.play_indicator = tk.Label(header_container, image=self.space_image, background=SPOT_BLACK)
         self.play_indicator.grid(sticky='w', column=0, row=0, padx=(70 * SCALE,0))
@@ -382,6 +383,90 @@ class StartPage(tk.Frame):
             (self.black_arrow_image if line_type == LINE_HIGHLIGHT else self.green_arrow_image)
         arrow.configure(background=bgColor, image=arrowImg)
         arrow.image = arrowImg
+
+class AboutFrame(tk.Frame): 
+    def __init__(self, parent, controller):  
+        tk.Frame.__init__(self, parent) 
+        self.green_arrow_image = ImageTk.PhotoImage(flattenAlpha(Image.open('pod_arrow_grn.png')))
+        self.black_arrow_image = ImageTk.PhotoImage(flattenAlpha(Image.open('pod_arrow_blk.png')))
+        self.empty_arrow_image = ImageTk.PhotoImage(flattenAlpha(Image.open('pod_arrow_empty.png')))
+        self.play_image = ImageTk.PhotoImage(flattenAlpha(Image.open('pod_play.png')))
+        self.pause_image = ImageTk.PhotoImage(flattenAlpha(Image.open('pod_pause.png')))
+        self.space_image = ImageTk.PhotoImage(flattenAlpha(Image.open('pod_space.png')))
+        self.wifi_image = ImageTk.PhotoImage(flattenAlpha(Image.open('pod_wifi.png')))
+        self.configure(bg=SPOT_BLACK)
+        header_container = tk.Canvas(self, bg=SPOT_BLACK, highlightthickness=0, relief='ridge')
+        header_container.grid(sticky='we')
+        self.header_label = tk.Label(header_container, text ="piPod", font = LARGEFONT, background=SPOT_BLACK, foreground=SPOT_GREEN) 
+        self.header_label.grid(sticky='we', column=1, row=0, padx=(0, 10))
+        self.play_indicator = tk.Label(header_container, image=self.space_image, background=SPOT_BLACK)
+        self.play_indicator.grid(sticky='w', column=0, row=0, padx=(70 * SCALE,0))
+        self.wifi_indicator = tk.Label(header_container, image=self.space_image, background=SPOT_BLACK)
+        self.wifi_indicator.grid(sticky='w', column=2, row=0, padx=(0,90 * SCALE))
+        header_container.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+        divider = tk.Canvas(self)
+        divider.configure(bg=SPOT_GREEN, height=DIVIDER_HEIGHT, bd=0, highlightthickness=0, relief='ridge')
+        divider.grid(row = 1, column = 0, sticky ="we", pady=10, padx=(10, 30))
+        contentFrame = tk.Canvas(self, bg=SPOT_BLACK, highlightthickness=0, relief='ridge')
+        contentFrame.grid(row = 2, column = 0, sticky ="nswe")
+        self.grid_rowconfigure(2, weight=1)
+        listFrame = tk.Canvas(contentFrame)
+        listFrame.configure(bg=SPOT_BLACK, bd=0, highlightthickness=0)
+        listFrame.grid(row=0, column=0, sticky="nsew")
+        contentFrame.grid_rowconfigure(0, weight=1)
+        contentFrame.grid_columnconfigure(0, weight=1)
+
+        # scrollbar 
+        self.scrollFrame = tk.Canvas(contentFrame)
+        self.scrollFrame.configure(bg=SPOT_BLACK, width=int(50 * SCALE), bd=0, highlightthickness=4, highlightbackground=SPOT_GREEN)
+        self.scrollBar = tk.Canvas(self.scrollFrame, bg=SPOT_GREEN, highlightthickness=0, width=int(20 * SCALE))
+        self.scrollBar.place(in_=self.scrollFrame, relx=.5,  y=int(10 * SCALE), anchor="n", relwidth=.6, relheight=.9)
+        self.scrollFrame.grid(row=0, column=1, sticky="ns", padx=(0, 30), pady=(0, 10))
+        
+        self.listItems = []
+        self.valeurs=[]
+        for x in range(6):
+            item = tk.Label(listFrame, text =" " + str(x), justify=tk.LEFT, anchor="w", font = LARGEFONT, background=SPOT_BLACK, foreground=SPOT_GREEN, padx=(30 * SCALE))
+            item.grid(row = x, column = 0, sticky="w",padx = (10, 0))
+            itemValue = tk.Label(listFrame, text =" " + str(x), justify=tk.RIGHT, anchor="e", font = LARGEFONT, background=SPOT_BLACK, foreground=SPOT_GREEN, padx=(30 * SCALE))
+            itemValue.grid(row=x, column=1, sticky="e", padx = (0, 30))
+            self.listItems.append(item)
+            self.valeurs.append(itemValue)
+        listFrame.grid_columnconfigure(0, weight=1)
+        # listFrame.grid_columnconfigure(1, weight=1)
+    
+
+    def show_scroll(self, index, total_count):
+        scroll_bar_y_rel_size = max(0.9 - (total_count - MENU_PAGE_SIZE) * 0.06, 0.03)
+        scroll_bar_y_raw_size = scroll_bar_y_rel_size * self.scrollFrame.winfo_height()
+        percentage = index / (total_count - 1)
+        offset = ((1 - percentage) * (scroll_bar_y_raw_size + int(20 * SCALE))) - (scroll_bar_y_raw_size + int(10 * SCALE))
+        self.scrollBar.place(in_=self.scrollFrame, relx=.5, rely=percentage, y=offset, anchor="n", relwidth=.66, relheight=scroll_bar_y_rel_size)
+        self.scrollFrame.grid(row=0, column=1, sticky="ns", padx=(0, 30), pady=(0, 10))
+
+    def hide_scroll(self):
+        self.scrollFrame.grid_forget()
+
+    def set_header(self, header, now_playing = None, has_wifi = False):
+        truncd_header = header if len(header) < 20 else header[0:17] + "..."
+        self.header_label.configure(text=truncd_header)
+        play_image = self.space_image
+        if now_playing is not None:
+            play_image = self.play_image if now_playing['is_playing'] else self.pause_image
+        self.play_indicator.configure(image = play_image)
+        self.play_indicator.image = play_image
+        wifi_image = self.wifi_image if has_wifi else self.space_image
+        self.wifi_indicator.configure(image = wifi_image)
+        self.wifi_indicator.image = wifi_image
+    
+    def set_about_list_item(self, index, text, valeur, line_type = LINE_NORMAL, show_arrow = False):
+        bgColor = SPOT_GREEN if line_type == LINE_HIGHLIGHT else SPOT_BLACK
+        txtColor = SPOT_BLACK if line_type == LINE_HIGHLIGHT else \
+            (SPOT_GREEN if line_type == LINE_NORMAL else SPOT_WHITE)
+        truncd_text = text if len(text) < 17 else text[0:15] + "..."
+        self.listItems[index].configure(background=bgColor, foreground=txtColor, text=truncd_text)
+        self.valeurs[index].configure(background=bgColor, foreground=txtColor, text=valeur)
 
 def processInput(app, input):
     global wheel_position, last_button, last_interaction
@@ -481,6 +566,17 @@ def render_menu(app, menu_render):
         page.set_list_item(i, text=line.title, line_type = line.line_type, show_arrow = line.show_arrow) 
     page.set_header(menu_render.header, menu_render.now_playing, menu_render.has_internet)
 
+def render_about(app, about_render):
+    app.show_frame(AboutFrame)
+    page = app.frames[AboutFrame]
+    if(about_render.total_count > MENU_PAGE_SIZE):
+        page.show_scroll(about_render.page_start, about_render.total_count)
+    else:
+        page.hide_scroll()
+    for (i, line) in enumerate(about_render.lines):
+        page.set_about_list_item(i, text=line.title, valeur=line.valeur, line_type = 0, show_arrow = True) 
+    page.set_header(about_render.header, about_render.now_playing, about_render.has_internet)
+
 def update_now_playing(now_playing):
     frame = app.frames[NowPlayingFrame]
     frame.update_now_playing(now_playing)
@@ -496,6 +592,8 @@ def render(app, render):
         render_now_playing(app, render)
     elif (render.type == SEARCH_RENDER):
         render_search(app, render)
+    elif (render.type == ABOUT_RENDER):
+        render_about(app, render)
 
 def onPlayPressed():
     global page, app

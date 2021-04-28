@@ -1,5 +1,6 @@
 import spotify_manager
 from functools import lru_cache 
+from about_model import *
 
 MENU_PAGE_SIZE = 6
 
@@ -27,6 +28,7 @@ class Rendering():
 
     def unsubscribe(self):
         pass
+
 
 class MenuRendering(Rendering):
     def __init__(self, header = "", lines = [], page_start = 0, total_count = 0):
@@ -380,6 +382,40 @@ class SingleArtistPage(MenuPage):
     def __init__(self, artistName, previous_page):
         super().__init__(artistName, previous_page, has_sub_page=True)
 
+class SettingsPage(MenuPage):
+    def __init__(self, previous_page):
+        super().__init__("Settings", previous_page, has_sub_page=True)
+        
+        self.pages = [
+            AboutPage(self),
+            WifiPage(self),
+            BluetoothPage(self)
+        ]
+        self.index = 0
+        self.page_start = 0
+
+    def get_pages(self):
+        return self.pages
+                
+    def total_size(self):
+        return len(self.get_pages())
+
+    def page_at(self, index):
+        return self.get_pages()[index]
+
+class WifiPage(MenuPage):
+    def __init__(self, previous_page):
+        super().__init__("Wifi", previous_page, has_sub_page=True)
+        self.index = 0
+        self.page_start = 0
+
+class BluetoothPage(MenuPage):
+    def __init__(self, previous_page):
+        super().__init__("Bluetooth", previous_page, has_sub_page=True)
+        self.index = 0
+        self.page_start = 0
+
+
 class SinglePlaylistPage(MenuPage):
     def __init__(self, playlist, previous_page):
         super().__init__(playlist.name, previous_page, has_sub_page=True)
@@ -435,13 +471,14 @@ class PlaceHolderPage(MenuPage):
 
 class RootPage(MenuPage):
     def __init__(self, previous_page):
-        super().__init__("sPot", previous_page, has_sub_page=True)
+        super().__init__("piPod", previous_page, has_sub_page=True)
         self.pages = [
             ArtistsPage(self),
             AlbumsPage(self),
             NewReleasesPage(self),
             PlaylistsPage(self),
             SearchPage(self),
+            SettingsPage(self),
             NowPlayingPage(self, "Now Playing", NowPlayingCommand())
         ]
         self.index = 0
@@ -457,6 +494,3 @@ class RootPage(MenuPage):
 
     def page_at(self, index):
         return self.get_pages()[index]
-
-
-    
