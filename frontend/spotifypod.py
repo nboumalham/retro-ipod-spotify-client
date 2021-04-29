@@ -16,7 +16,7 @@ import os
    
   
 LARGEFONT =("ChicagoFLF", 90) 
-MED_FONT =("ChicagoFLF", 70) 
+MED_FONT =("ChicagoFLF", 60) 
 SCALE = 1
 SPOT_GREEN = "#272324"
 SPOT_BLACK = "#C8C5C0"
@@ -478,8 +478,7 @@ class AboutFrame(tk.Frame):
         bgColor = SPOT_GREEN if line_type == LINE_HIGHLIGHT else SPOT_BLACK
         txtColor = SPOT_BLACK if line_type == LINE_HIGHLIGHT else \
             (SPOT_GREEN if line_type == LINE_NORMAL else SPOT_WHITE)
-        truncd_text = text if len(text) < 17 else text[0:15] + "..."
-        self.listItems[index].configure(background=bgColor, foreground=txtColor, text=truncd_text)
+        self.listItems[index].configure(background=bgColor, foreground=txtColor, text=text)
         self.valeurs[index].configure(background=bgColor, foreground=txtColor, text=valeur)
 
 def processInput(app, input):
@@ -588,8 +587,8 @@ def render_about(app, about_render):
     else:
         page.hide_scroll()
     for (i, line) in enumerate(about_render.lines):
-        truncd_title = line.title if len(line.title) < 9 else line.title[0:6] + "..."
-        truncd_valeur = line.valeur if len(line.valeur) < 24 else line.valeur[0:21] + "..."
+        truncd_title = line.title if len(line.title) < 9 else line.title[0:5] + "..."
+        truncd_valeur = line.valeur if len(line.valeur) < 13 else line.valeur[0:9] + "..."
         page.set_about_list_item(i, text=truncd_title, valeur=truncd_valeur, line_type = 0, show_arrow = True) 
     page.set_header(about_render.header, about_render.now_playing, about_render.has_internet)
 
