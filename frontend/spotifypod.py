@@ -43,6 +43,14 @@ last_button = -1
 last_interaction = time.time()
 screen_on = True
 
+
+try:
+    import RPi.GPIO as gpio
+    test_environment = False
+except:
+    test_environment = True
+
+
 def screen_sleep():
     global screen_on
     screen_on = False
@@ -86,7 +94,13 @@ class tkinterApp(tk.Tk):
         global LARGEFONT, MED_FONT, SCALE
         # __init__ function for class Tk 
         tk.Tk.__init__(self, *args, **kwargs)
-        SCALE = self.winfo_screenheight() / 930
+        
+        if(test_environment) :
+            self.geometry("320x240")
+
+
+        SCALE = 240 / 1030
+
         LARGEFONT =("ChicagoFLF", int(72 * SCALE))
         MED_FONT =("ChicagoFLF", int(52 * SCALE))
         # creating a container 
@@ -426,10 +440,10 @@ class AboutFrame(tk.Frame):
         
         self.listItems = []
         self.valeurs=[]
-        for x in range(6):
-            item = tk.Label(listFrame, text =" " + str(x), justify=tk.LEFT, anchor="w", font = LARGEFONT, background=SPOT_BLACK, foreground=SPOT_GREEN, padx=(30 * SCALE))
+        for x in range(8):
+            item = tk.Label(listFrame, text =" " + str(x), justify=tk.LEFT, anchor="w", font = MED_FONT, background=SPOT_BLACK, foreground=SPOT_GREEN, padx=(30 * SCALE))
             item.grid(row = x, column = 0, sticky="w",padx = (10, 0))
-            itemValue = tk.Label(listFrame, text =" " + str(x), justify=tk.RIGHT, anchor="e", font = LARGEFONT, background=SPOT_BLACK, foreground=SPOT_GREEN, padx=(30 * SCALE))
+            itemValue = tk.Label(listFrame, text =" " + str(x), justify=tk.RIGHT, anchor="e", font = MED_FONT, background=SPOT_BLACK, foreground=SPOT_GREEN, padx=(30 * SCALE))
             itemValue.grid(row=x, column=1, sticky="e", padx = (0, 30))
             self.listItems.append(item)
             self.valeurs.append(itemValue)
@@ -569,13 +583,13 @@ def render_menu(app, menu_render):
 def render_about(app, about_render):
     app.show_frame(AboutFrame)
     page = app.frames[AboutFrame]
-    if(about_render.total_count > MENU_PAGE_SIZE):
+    if(about_render.total_count > 8):
         page.show_scroll(about_render.page_start, about_render.total_count)
     else:
         page.hide_scroll()
     for (i, line) in enumerate(about_render.lines):
-        truncd_title = line.title if len(line.title) < 10 else line.title[0:6] + "..."
-        truncd_valeur = line.valeur if len(line.valeur) < 19 else line.valeur[0:15] + "..."
+        truncd_title = line.title if len(line.title) < 9 else line.title[0:6] + "..."
+        truncd_valeur = line.valeur if len(line.valeur) < 24 else line.valeur[0:21] + "..."
         page.set_about_list_item(i, text=truncd_title, valeur=truncd_valeur, line_type = 0, show_arrow = True) 
     page.set_header(about_render.header, about_render.now_playing, about_render.has_internet)
 
@@ -644,7 +658,11 @@ app = tkinterApp()
 render(app, page.render())
 app.overrideredirect(True)
 app.overrideredirect(False)
-app.attributes('-fullscreen',True)
+if (test_environment):
+    app.attributes('-fullscreen',False)
+else :
+    app.attributes('-fullscreen',True)
+
 sock = socket.socket(socket.AF_INET, # Internet
                      socket.SOCK_DGRAM) # UDP
 sock.bind((UDP_IP, UDP_PORT))

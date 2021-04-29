@@ -2,7 +2,7 @@ import spotify_manager
 import os
 
 
-ABOUT_PAGE_SIZE = 6
+ABOUT_PAGE_SIZE = 8
 ABOUT_RENDER = 3
 
 
@@ -85,14 +85,14 @@ class AboutPage():
         try:
             f = open('/proc/version','r')
             for line in f:
-                version = line
+                version = line[14:]
             f.close()
         except:
             version = "ERROR"
         return version
 
     def getuptime(self):
-        t = os.popen('uptime -p').read()[:-1]
+        t = os.popen('uptime -p').read()[3:-1]
         return t
 
     def getcapacity(self):
@@ -106,13 +106,10 @@ class AboutPage():
 
     def get_content(self):
         aboutList = []
-        aboutList.append(AboutLineItem("Songs", "0"))
-        aboutList.append(AboutLineItem("Photos", "0"))
-        aboutList.append(AboutLineItem("Videos", "0"))       
-        aboutList.append(AboutLineItem("Version", self.getversion()))
         aboutList.append(AboutLineItem("Model", "Zero"))
-        aboutList.append(AboutLineItem("Capacity", "0"))
-        aboutList.append(AboutLineItem("S/N", self.getserial()))
+        aboutList.append(AboutLineItem("Capacity", "32 Gib"))
+        aboutList.append(AboutLineItem("Version", self.getversion()))
+        aboutList.append(AboutLineItem("Serial", self.getserial()))
         aboutList.append(AboutLineItem("Uptime", self.getuptime()))
         return aboutList
 
@@ -122,7 +119,7 @@ class AboutPage():
 
 
     def render(self):
-        content = self.get_content()
+        content = self.aboutItems
         lines = []
         total_size = self.total_size()
         for i in range(self.page_start, self.page_start + ABOUT_PAGE_SIZE):
