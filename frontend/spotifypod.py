@@ -574,7 +574,9 @@ def render_about(app, about_render):
     else:
         page.hide_scroll()
     for (i, line) in enumerate(about_render.lines):
-        page.set_about_list_item(i, text=line.title, valeur=line.valeur, line_type = 0, show_arrow = True) 
+        truncd_title = line.title if len(line.title) < 10 else line.title[0:6] + "..."
+        truncd_valeur = line.valeur if len(line.valeur) < 19 else line.valeur[0:15] + "..."
+        page.set_about_list_item(i, text=truncd_title, valeur=truncd_valeur, line_type = 0, show_arrow = True) 
     page.set_header(about_render.header, about_render.now_playing, about_render.has_internet)
 
 def update_now_playing(now_playing):

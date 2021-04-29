@@ -1,4 +1,6 @@
 import spotify_manager
+import os
+
 
 ABOUT_PAGE_SIZE = 6
 ABOUT_RENDER = 3
@@ -31,6 +33,8 @@ class AboutLineItem():
 
 class AboutPage():
     def __init__(self, previous_page, has_sub_page= True, is_title = False):
+        self.index = 0
+        self.page_start = 0
         self.header = "About"
         self.has_sub_page = "True"
         self.previous_page = previous_page
@@ -38,25 +42,96 @@ class AboutPage():
         self.aboutItems = self.get_content()
         self.num_aboutItems = len(self.aboutItems)
 
+
+    def get_index_jump_up(self):
+        return 1
+
+    def get_index_jump_down(self):
+        return 1
+
     def nav_back(self):
         return self.previous_page
+
+    def nav_up(self):
+        jump = self.get_index_jump_up()
+        if (ABOUT_PAGE_SIZE >= self.total_size() - self.page_start):
+            return
+        self.page_start = self.page_start + jump
+        self.index = self.page_start + ABOUT_PAGE_SIZE - 1
+
+    def nav_down(self):
+        jump = self.get_index_jump_down()
+        if(self.page_start <= (jump - 1)):
+            return
+        self.page_start = self.page_start - jump
+        self.index = self.page_start
+
+    def getserial(self):
+        # Extract serial from cpuinfo file
+        cpuserial = "DEV000000000"
+        try:
+            f = open('/proc/cpuinfo','r')
+            for line in f:
+                if line[0:6]=='Serial':
+                    cpuserial = line[10:26]
+            f.close()
+        except:
+            cpuserial = "ERROR000000000"
+        return cpuserial
+    
+    def getversion(self):
+        # Extract serial from cpuinfo file
+        version = "ERROR"
+        try:
+            f = open('/proc/version','r')
+            for line in f:
+                version = line
+            f.close()
+        except:
+            version = "ERROR"
+        return version
+
+    def getuptime(self):
+        t = os.popen('uptime -p').read()[:-1]
+        return t
+
+    def getcapacity(self):
+        # Extract serial from cpuinfo file
+        capacity = "0"
+        try:
+            capacity = os.popen(' df -h').read()[:-1]
+        except:
+            capacity = "ERROR"
+        return capacity
 
     def get_content(self):
         aboutList = []
         aboutList.append(AboutLineItem("Songs", "0"))
         aboutList.append(AboutLineItem("Photos", "0"))
         aboutList.append(AboutLineItem("Videos", "0"))       
-        aboutList.append(AboutLineItem("Version", "0.1"))
+        aboutList.append(AboutLineItem("Version", self.getversion()))
         aboutList.append(AboutLineItem("Model", "Zero"))
-        aboutList.append(AboutLineItem("Capacity", "32 GB"))
-        aboutList.append(AboutLineItem("S/N", "8KN7F54DE12ZQ56"))
+        aboutList.append(AboutLineItem("Capacity", "0"))
+        aboutList.append(AboutLineItem("S/N", self.getserial()))
+        aboutList.append(AboutLineItem("Uptime", self.getuptime()))
         return aboutList
 
 
     def total_size(self):
         return self.num_aboutItems
 
+
     def render(self):
+        content = self.get_content()
+        lines = []
         total_size = self.total_size()
-        lines = self.get_content()
-        return AboutRendering(lines=lines, header=self.header, page_start=0, total_count=total_size)
+        for i in range(self.page_start, self.page_start + ABOUT_PAGE_SIZE):
+            if (i < total_size):
+                page = content[i]
+                if (page is None) :
+                    lines.append(AboutLineItem())
+                else:
+                    lines.append(page)
+            else:
+                lines.append(AboutLineItem())
+        return AboutRendering(lines=lines, header=self.header, page_start=self.index, total_count=total_size)
