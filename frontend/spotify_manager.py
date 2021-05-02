@@ -43,7 +43,7 @@ class UserArtist():
     def __str__(self):
         return self.name
 
-class UserPlaylist(): 
+class UserPlaylist():
     __slots__ = ['name', 'uri', 'track_count']
     def __init__(self, name, uri, track_count):
         self.name = name
@@ -136,7 +136,7 @@ def get_album_tracks(id):
         tracks.append(UserTrack(track['name'], track['artists'][0]['name'], track['album']['name'], track['uri']))
     return tracks
 
-def refresh_devices():
+def refresh_devices(out_queue = None):
     results = sp.devices()
     DATASTORE.clearDevices()
     for _, item in enumerate(results['devices']):
@@ -144,6 +144,8 @@ def refresh_devices():
             print(item['name'])
             device = UserDevice(item['id'], item['name'], item['is_active'])
             DATASTORE.setUserDevice(device)
+    if(out_queue is not None) : 
+        out_queue.put(True)
 
 def parse_album(album):
     artist = album['artists'][0]['name']
@@ -153,8 +155,8 @@ def parse_album(album):
     for _, track in enumerate(album['tracks']['items']):
         tracks.append(UserTrack(track['name'], artist, album['name'], track['uri']))
     return (UserAlbum(album['name'], artist, len(tracks), album['uri']), tracks)
-    
-def refresh_data():
+
+def refresh_data(out_queue):
     DATASTORE.clear()
     results = sp.current_user_saved_tracks(limit=pageSize, offset=0)
     while(results['next']):
@@ -223,6 +225,7 @@ def refresh_data():
 
     refresh_devices()
     print("Refreshed devices")
+    out_queue.put(True)
 
 def play_artist(artist_uri, device_id = None):
     if (not device_id):
@@ -284,7 +287,7 @@ def get_now_playing():
         if (not playlist):
             playlist, tracks = get_playlist(uri.split(":")[-1])
             DATASTORE.setPlaylist(playlist, tracks)
-        now_playing['track_index'] = next(x for x, val in enumerate(tracks) 
+        now_playing['track_index'] = next(x for x, val in enumerate(tracks)
                                   if val.uri == track_uri) + 1
         now_playing['track_total'] = len(tracks)
         now_playing['context_name'] = playlist.name
@@ -295,7 +298,7 @@ def get_now_playing():
         if (not album):
             album, tracks = get_album(uri.split(":")[-1])
             DATASTORE.setAlbum(album, tracks)
-        now_playing['track_index'] = next(x for x, val in enumerate(tracks) 
+        now_playing['track_index'] = next(x for x, val in enumerate(tracks)
                                   if val.uri == track_uri) + 1
         now_playing['track_total'] = len(tracks)
         now_playing['context_name'] = album.name

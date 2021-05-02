@@ -21,7 +21,7 @@ class AboutRendering(Rendering):
         self.header = header
         self.page_start = page_start
         self.total_count = total_count
-        self.now_playing = False
+        self.now_playing = spotify_manager.DATASTORE.now_playing
         self.has_internet = True
 
 class AboutLineItem():
@@ -78,7 +78,7 @@ class AboutPage():
         except:
             cpuserial = "ERROR000000000"
         return cpuserial
-    
+
     def getversion(self):
         # Extract serial from cpuinfo file
         version = "ERROR"
