@@ -43,19 +43,16 @@ class BootRendering(Rendering):
         if not page.callback:
             return
         elif (not page.loading and not page.loaded ):
-            print("Loading for the first time")
             self.load_spotify(page)
         else :
-            print("still loading")
-            print(page.loaded)
             page.loaded = page.my_queue.get()
 
         page.callback(page.loaded)
 
     def load_spotify(self, page):
         page.loading = True
-        #thread1 = threading.Thread(target = spotify_manager.refresh_data, args=(page.my_queue,))
-        thread1 = threading.Thread(target = spotify_manager.refresh_devices, args=(page.my_queue,))
+        thread1 = threading.Thread(target = spotify_manager.refresh_data, args=(page.my_queue,))
+        #thread1 = threading.Thread(target = spotify_manager.refresh_devices, args=(page.my_queue,))
         thread1.start()
 
     def unsubscribe(self):
