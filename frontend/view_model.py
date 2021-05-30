@@ -235,7 +235,7 @@ class NowPlayingPage():
         vol = m.getvolume()
         vol = int(vol[0])
         if (vol < 100) :
-            newVol = vol + 1
+            newVol = vol + 10
             m.setvolume(newVol)
             self.live_render.refresh()
 
@@ -245,7 +245,7 @@ class NowPlayingPage():
         vol = m.getvolume()
         vol = int(vol[0])
         if (vol > 0) :
-            newVol = vol - 1
+            newVol = vol - 10
             m.setvolume(newVol)
             self.live_render.refresh()
 
