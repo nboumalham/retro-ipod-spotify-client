@@ -93,7 +93,13 @@ class NowPlayingRendering(Rendering):
             return
         if self.after_id:
             self.app.after_cancel(self.after_id)
-        self.callback(spotify_manager.DATASTORE.now_playing)
+        #volume
+        m = alsaaudio.Mixer()
+        vol = m.getvolume()
+        vol = int(vol[0])
+        now_playing = spotify_manager.DATASTORE.now_playing
+        now_playing['volume'] = str(vol)
+        self.callback(now_playing)
         self.after_id = self.app.after(500, lambda: self.refresh())
 
     def unsubscribe(self):
@@ -229,16 +235,20 @@ class NowPlayingPage():
         vol = m.getvolume()
         vol = int(vol[0])
         if (vol < 100) :
-            newVol = vol + 10
+            newVol = vol + 1
             m.setvolume(newVol)
+            self.live_render.refresh()
+
 
     def nav_down(self):
         m = alsaaudio.Mixer()
         vol = m.getvolume()
         vol = int(vol[0])
         if (vol > 0) :
-            newVol = vol - 10
+            newVol = vol - 1
             m.setvolume(newVol)
+            self.live_render.refresh()
+
 
     def nav_select(self):
         return self

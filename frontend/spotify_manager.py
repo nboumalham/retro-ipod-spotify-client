@@ -4,6 +4,7 @@ from spotipy.oauth2 import SpotifyOAuth
 import threading
 import time
 import json
+import alsaaudio
 
 class UserDevice():
     __slots__ = ['id', 'name', 'is_active']
@@ -144,7 +145,7 @@ def refresh_devices(out_queue = None):
             print(item['name'])
             device = UserDevice(item['id'], item['name'], item['is_active'])
             DATASTORE.setUserDevice(device)
-    if(out_queue is not None) : 
+    if(out_queue is not None) :
         out_queue.put(True)
 
 def parse_album(album):
@@ -266,6 +267,7 @@ def get_now_playing():
     track = response['item']
     track_uri = track['uri']
     artist = track['artists'][0]['name']
+
     now_playing = {
         'name': track['name'],
         'track_uri': track_uri,
@@ -276,7 +278,7 @@ def get_now_playing():
         'progress': response['progress_ms'],
         'context_name': artist,
         'track_index': -1,
-        'timestamp': time.time()
+        'timestamp': time.time(),
     }
     if not context:
         return now_playing

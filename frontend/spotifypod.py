@@ -209,6 +209,8 @@ class NowPlayingFrame(BaseFrame):
         self.configure(bg=SPOT_BLACK)
         self.header_label = tk.Label(self, text ="Now Playing", font = LARGEFONT, background=SPOT_BLACK, foreground=SPOT_GREEN)
         self.header_label.grid(sticky='we', padx=(0, 10))
+        self.header_volume_label = tk.Label(self, text ="100", font = MED_FONT, background=SPOT_BLACK, foreground=SPOT_GREEN)
+        self.header_volume_label.grid(sticky='w', column=0, row=0, padx=(70 * SCALE,0))
         self.grid_columnconfigure(0, weight=1)
         divider = tk.Canvas(self)
         divider.configure(bg=SPOT_GREEN, height=DIVIDER_HEIGHT, bd=0, highlightthickness=0, relief='ridge')
@@ -250,6 +252,7 @@ class NowPlayingFrame(BaseFrame):
                 self.inflated = True
         if not now_playing:
             return
+        self.header_volume_label.configure(text=now_playing['volume'])
         self.track_label.set_text(now_playing['name'])
         artist = now_playing['artist']
         if self.cached_artist != artist:
