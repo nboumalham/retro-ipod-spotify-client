@@ -4,6 +4,7 @@ from config import *
 import os
 import threading
 import queue
+import alsaaudio
 
 # Screen render types
 MENU_RENDER_TYPE = 0
@@ -51,8 +52,8 @@ class BootRendering(Rendering):
 
     def load_spotify(self, page):
         page.loading = True
-        thread1 = threading.Thread(target = spotify_manager.refresh_data, args=(page.my_queue,))
-        #thread1 = threading.Thread(target = spotify_manager.refresh_devices, args=(page.my_queue,))
+        #thread1 = threading.Thread(target = spotify_manager.refresh_data, args=(page.my_queue,))
+        thread1 = threading.Thread(target = spotify_manager.refresh_devices, args=(page.my_queue,))
         thread1.start()
 
     def unsubscribe(self):
@@ -224,10 +225,20 @@ class NowPlayingPage():
         spotify_manager.run_async(lambda: self.toggle_play())
 
     def nav_up(self):
-        pass
+        m = alsaaudio.Mixer()
+        vol = m.getvolume()
+        vol = int(vol[0])
+        if (vol < 100) :
+            newVol = vol + 10
+            m.setvolume(newVol)
 
     def nav_down(self):
-        pass
+        m = alsaaudio.Mixer()
+        vol = m.getvolume()
+        vol = int(vol[0])
+        if (vol > 0) :
+            newVol = vol - 10
+            m.setvolume(newVol)
 
     def nav_select(self):
         return self
