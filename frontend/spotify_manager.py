@@ -78,7 +78,7 @@ scope = "user-follow-read," \
 DATASTORE = datastore.Datastore()
 
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
-pageSize = 50
+pageSize = 20
 has_internet = False
 
 def check_internet(request):
