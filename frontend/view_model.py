@@ -237,7 +237,6 @@ class NowPlayingPage():
         if (vol < 100) :
             newVol = vol + 5
             m.setvolume(newVol)
-            self.live_render.refresh()
 
 
     def nav_down(self):
@@ -247,7 +246,6 @@ class NowPlayingPage():
         if (vol > 0) :
             newVol = vol - 5
             m.setvolume(newVol)
-            self.live_render.refresh()
 
 
     def nav_select(self):
