@@ -78,6 +78,7 @@ class NowPlayingRendering(Rendering):
         super().__init__(NOW_PLAYING_RENDER)
         self.callback = None
         self.after_id = None
+        self.target_volume = alsaaudio.Mixer().getvolume()[0]
 
     def subscribe(self, app, callback):
         if callback == self.callback:
@@ -95,10 +96,10 @@ class NowPlayingRendering(Rendering):
             self.app.after_cancel(self.after_id)
         #volume
         m = alsaaudio.Mixer()
-        vol = m.getvolume()
-        vol = int(vol[0])
+        m.setvolume(self.target_volume)
+
         now_playing = spotify_manager.DATASTORE.now_playing
-        now_playing['volume'] = str(vol)
+        now_playing['volume'] = str(self.target_volume)
         self.callback(now_playing)
         self.after_id = self.app.after(500, lambda: self.refresh())
 
@@ -231,21 +232,17 @@ class NowPlayingPage():
         spotify_manager.run_async(lambda: self.toggle_play())
 
     def nav_up(self):
-        m = alsaaudio.Mixer()
-        vol = m.getvolume()
-        vol = int(vol[0])
+        vol = self.live_render.target_volume
         if (vol < 100) :
             newVol = vol + 5
-            m.setvolume(newVol)
+            self.live_render.target_volume = newVol
 
 
     def nav_down(self):
-        m = alsaaudio.Mixer()
-        vol = m.getvolume()
-        vol = int(vol[0])
+        vol = self.live_render.target_volume
         if (vol > 0) :
             newVol = vol - 5
-            m.setvolume(newVol)
+            self.live_render.target_volume = newVol
 
 
     def nav_select(self):

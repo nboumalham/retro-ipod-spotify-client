@@ -307,8 +307,8 @@ class BootFrame(tk.Frame):
 class StartPage(BaseFrame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        self.green_arrow_image = ImageTk.PhotoImage(self.flattenAlpha(Image.open('pod_arrow_blk.png')))
-        self.black_arrow_image = ImageTk.PhotoImage(self.flattenAlpha(Image.open('pod_arrow_empty.png')))
+        self.green_arrow_image = ImageTk.PhotoImage(self.flattenAlpha(Image.open('pod_arrow_grn.png')))
+        self.black_arrow_image = ImageTk.PhotoImage(self.flattenAlpha(Image.open('pod_arrow_blk.png')))
         self.empty_arrow_image = ImageTk.PhotoImage(self.flattenAlpha(Image.open('pod_arrow_empty.png')))
         self.play_image = ImageTk.PhotoImage(self.flattenAlpha(Image.open('pod_play.png')))
         self.pause_image = ImageTk.PhotoImage(self.flattenAlpha(Image.open('pod_pause.png')))
