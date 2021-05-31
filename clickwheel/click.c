@@ -4,19 +4,19 @@
 #include <pigpio.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h> 
-#include <string.h> 
-#include <sys/types.h> 
-#include <sys/socket.h> 
-#include <arpa/inet.h> 
-#include <netinet/in.h> 
+#include <unistd.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
 
 #define CLOCK_PIN 23
 #define DATA_PIN 25
 #define HAPTIC_PIN 26
 #define BIT_COUNT 32
-#define PORT 9090 
-#define MAXLINE 1024 
+#define PORT 9090
+#define MAXLINE 1024
 
 #define CENTER_BUTTON_BIT 7
 #define LEFT_BUTTON_BIT 9
@@ -42,22 +42,22 @@ uint8_t dataBit = 1;
 uint8_t lastPosition = 255;
 int hapticWaveId = -1;
 
-char buttons[] = { 
-    CENTER_BUTTON_BIT, 
-    LEFT_BUTTON_BIT, 
-    RIGHT_BUTTON_BIT, 
-    UP_BUTTON_BIT, 
-    DOWN_BUTTON_BIT, 
+char buttons[] = {
+    CENTER_BUTTON_BIT,
+    LEFT_BUTTON_BIT,
+    RIGHT_BUTTON_BIT,
+    UP_BUTTON_BIT,
+    DOWN_BUTTON_BIT,
     WHEEL_TOUCH_BIT
 };
 
 // all valid click wheel packets start with this
 const uint32_t PACKET_START = 0b01101;
 
-int sockfd; 
-char buffer[BUFFER_SIZE]; 
+int sockfd;
+char buffer[BUFFER_SIZE];
 char prev_buffer[BUFFER_SIZE];
-struct sockaddr_in servaddr; 
+struct sockaddr_in servaddr;
 
 // helper function to print packets as binary
 void printBinary(uint32_t value) {
@@ -80,7 +80,7 @@ void sendPacket() {
     for (size_t i = 0; i < BUFFER_SIZE; i++) {
         buffer[i] = -1;
     }
-    
+
     for (size_t i = 0; i < sizeof(buttons); i++) {
         char buttonIndex = buttons[i];
         if ((bits >> buttonIndex) & 1 && !((lastBits >> buttonIndex) & 1)) {
@@ -107,21 +107,21 @@ void sendPacket() {
     }
     printf("position %d\n", wheelPosition);
     lastBits = bits;
-    sendto(sockfd, (const char *)buffer, BUFFER_SIZE, 
-        MSG_CONFIRM, (const struct sockaddr *) &servaddr,  
-            sizeof(servaddr)); 
+    sendto(sockfd, (const char *)buffer, BUFFER_SIZE,
+        MSG_CONFIRM, (const struct sockaddr *) &servaddr,
+            sizeof(servaddr));
     memcpy(prev_buffer, buffer, BUFFER_SIZE);
 }
 
-// Function to set the kth bit of n 
-int setBit(int n, int k) { 
-    return (n | (1 << (k - 1))); 
-} 
-  
-// Function to clear the kth bit of n 
-int clearBit(int n, int k) { 
-    return (n & (~(1 << (k - 1)))); 
-} 
+// Function to set the kth bit of n
+int setBit(int n, int k) {
+    return (n | (1 << (k - 1)));
+}
+
+// Function to clear the kth bit of n
+int clearBit(int n, int k) {
+    return (n & (~(1 << (k - 1))));
+}
 
 void onClockEdge(int gpio, int level, uint32_t tick) {
     if (!level) {
@@ -158,18 +158,18 @@ void onDataEdge(int gpio, int level, uint32_t tick) {
 }
 
 int main(void *args){
-  
-    // Creating socket file descriptor 
-    if ( (sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) { 
-        perror("socket creation failed"); 
-        exit(EXIT_FAILURE); 
-    } 
-  
-    memset(&servaddr, 0, sizeof(servaddr)); 
-      
-    servaddr.sin_family = AF_INET; 
-    servaddr.sin_port = htons(PORT); 
-    servaddr.sin_addr.s_addr = INADDR_ANY; 
+
+    // Creating socket file descriptor
+    if ( (sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) {
+        perror("socket creation failed");
+        exit(EXIT_FAILURE);
+    }
+
+    memset(&servaddr, 0, sizeof(servaddr));
+
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_port = htons(PORT);
+    servaddr.sin_addr.s_addr = INADDR_ANY;
 
     if (gpioInitialise() < 0) {
        exit(1);
@@ -180,7 +180,7 @@ int main(void *args){
     gpioPulse_t pulse[2];
     pulse[0].gpioOn = (1<<HAPTIC_PIN);
     pulse[0].gpioOff = 0;
-    pulse[0].usDelay = 8000;
+    pulse[0].usDelay = 60000;
 
     pulse[1].gpioOn = 0;
     pulse[1].gpioOff = (1<<HAPTIC_PIN);
@@ -197,7 +197,7 @@ int main(void *args){
     gpioSetAlertFunc(DATA_PIN, onDataEdge);
 
     while(1) {
-
+      sleep(1000);
     };
     gpioTerminate();
 }
