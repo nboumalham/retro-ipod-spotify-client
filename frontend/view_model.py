@@ -78,7 +78,7 @@ class NowPlayingRendering(Rendering):
         super().__init__(NOW_PLAYING_RENDER)
         self.callback = None
         self.after_id = None
-        self.target_volume = alsaaudio.Mixer().getvolume()[0]
+        self.target_volume = 00 #alsaaudio.Mixer().getvolume()[0]
 
     def subscribe(self, app, callback):
         if callback == self.callback:
