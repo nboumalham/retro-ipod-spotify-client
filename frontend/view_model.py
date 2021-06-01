@@ -1,10 +1,10 @@
 import spotify_manager
+import system_controller
 from functools import lru_cache
 from config import *
 import os
 import threading
 import queue
-import alsaaudio
 
 # Screen render types
 MENU_RENDER_TYPE = 0
@@ -12,6 +12,7 @@ NOW_PLAYING_RENDER = 1
 SEARCH_RENDER = 2
 BOOT_RENDER = 3
 
+SystemController = system_controller.SystemController()
 #spotify_manager.refresh_data()
 
 class LineItem():
@@ -78,7 +79,7 @@ class NowPlayingRendering(Rendering):
         super().__init__(NOW_PLAYING_RENDER)
         self.callback = None
         self.after_id = None
-        self.target_volume = 00 #alsaaudio.Mixer().getvolume()[0]
+        self.target_volume = SystemController.get_volume()
 
     def subscribe(self, app, callback):
         if callback == self.callback:
@@ -95,8 +96,8 @@ class NowPlayingRendering(Rendering):
         if self.after_id:
             self.app.after_cancel(self.after_id)
         #volume
-        m = alsaaudio.Mixer()
-        m.setvolume(self.target_volume)
+        if(SystemController.get_volume() != self.target_volume) :
+            SystemController.set_volume(self.target_volume)
 
         now_playing = spotify_manager.DATASTORE.now_playing
         now_playing['volume'] = str(self.target_volume)

@@ -4,7 +4,6 @@ from spotipy.oauth2 import SpotifyOAuth
 import threading
 import time
 import json
-import alsaaudio
 
 class UserDevice():
     __slots__ = ['id', 'name', 'is_active']
@@ -78,7 +77,7 @@ scope = "user-follow-read," \
 DATASTORE = datastore.Datastore()
 
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(scope=scope))
-pageSize = 20
+pageSize = 50
 has_internet = False
 
 def check_internet(request):
@@ -267,7 +266,6 @@ def get_now_playing():
     track = response['item']
     track_uri = track['uri']
     artist = track['artists'][0]['name']
-
     now_playing = {
         'name': track['name'],
         'track_uri': track_uri,
@@ -278,7 +276,7 @@ def get_now_playing():
         'progress': response['progress_ms'],
         'context_name': artist,
         'track_index': -1,
-        'timestamp': time.time(),
+        'timestamp': time.time()
     }
     if not context:
         return now_playing
