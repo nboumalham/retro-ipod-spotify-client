@@ -12,11 +12,13 @@
 #include <netinet/in.h>
 
 #define CLOCK_PIN 23
-#define DATA_PIN 25
+#define DATA_PIN 5
 #define HAPTIC_PIN 26
 #define BIT_COUNT 32
 #define PORT 9090
 #define MAXLINE 1024
+
+
 
 #define CENTER_BUTTON_BIT 7
 #define LEFT_BUTTON_BIT 9
@@ -41,6 +43,8 @@ uint8_t recording = 0;
 uint8_t dataBit = 1;
 uint8_t lastPosition = 255;
 int hapticWaveId = -1;
+
+int offTimer = 0;
 
 char buttons[] = {
     CENTER_BUTTON_BIT,
@@ -87,10 +91,18 @@ void sendPacket() {
             buffer[BUTTON_INDEX] = buttonIndex;
             buffer[BUTTON_STATE_INDEX] = 1;
             printf("button pressed: %d\n", buttonIndex);
+            if (BUTTON_INDEX == 4) {
+              offTimer++;
+              printf("shutting down in : %d\n", offTimer);
+            }
         } else if (!((bits >> buttonIndex) & 1) && (lastBits >> buttonIndex) & 1) {
             buffer[BUTTON_INDEX] = buttonIndex;
             buffer[BUTTON_STATE_INDEX] = 0;
             printf("button released: %d\n", buttonIndex);
+            if (BUTTON_INDEX == 4) {
+              offTimer = 0;
+              printf("No longer shutting down : %d\n", offTimer);
+            }
         }
     }
     uint8_t wheelPosition = (bits >> 16) & 0xFF;
