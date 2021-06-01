@@ -420,6 +420,7 @@ class ArtistsPage(MenuPage):
     def total_size(self):
         return spotify_manager.DATASTORE.getArtistCount()
 
+    @lru_cache(maxsize=15)
     def page_at(self, index):
         # play track
         artist = spotify_manager.DATASTORE.getArtist(index)
