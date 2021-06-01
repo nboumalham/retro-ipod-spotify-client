@@ -90,7 +90,7 @@ void sendPacket() {
             buffer[BUTTON_STATE_INDEX] = 1;
             printf("button pressed: %d\n", buttonIndex);
             if (BUTTON_INDEX == 4) {
-              offTimer++
+              offTimer++;
               printf("shutting down in : %d\n", offTimer);
             }
         } else if (!((bits >> buttonIndex) & 1) && (lastBits >> buttonIndex) & 1) {
@@ -98,7 +98,7 @@ void sendPacket() {
             buffer[BUTTON_STATE_INDEX] = 0;
             printf("button released: %d\n", buttonIndex);
             if (BUTTON_INDEX == 4) {
-              offTimer = 0
+              offTimer = 0;
               printf("No longer shutting down : %d\n", offTimer);
             }
         }
