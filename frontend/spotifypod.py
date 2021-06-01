@@ -189,7 +189,7 @@ class SearchFrame(tk.Frame):
         contentFrame.grid_columnconfigure(1, weight=1)
         search_line = tk.Canvas(self)
         search_line.configure(bg=SPOT_GREEN, height=5, bd=0, highlightthickness=0, relief='ridge')
-        search_line.grid(row = 3, column = 0, sticky ="we", pady=10, padx=120)
+        search_line.grid(row = 3, column = 0, sticky ="we", pady=10, padx=30)
         self.loading_label = tk.Label(self, text ="", font = LARGEFONT, background=SPOT_BLACK, foreground=SPOT_WHITE)
         self.loading_label.grid(row = 4, column = 0, sticky ="we", pady=(int(100 * SCALE), 0))
 
