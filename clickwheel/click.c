@@ -89,18 +89,10 @@ void sendPacket() {
             buffer[BUTTON_INDEX] = buttonIndex;
             buffer[BUTTON_STATE_INDEX] = 1;
             printf("button pressed: %d\n", buttonIndex);
-            if (BUTTON_INDEX == 4) {
-              offTimer++;
-              printf("shutting down in : %d\n", offTimer);
-            }
         } else if (!((bits >> buttonIndex) & 1) && (lastBits >> buttonIndex) & 1) {
             buffer[BUTTON_INDEX] = buttonIndex;
             buffer[BUTTON_STATE_INDEX] = 0;
             printf("button released: %d\n", buttonIndex);
-            if (BUTTON_INDEX == 4) {
-              offTimer = 0;
-              printf("No longer shutting down : %d\n", offTimer);
-            }
         }
     }
     uint8_t wheelPosition = (bits >> 16) & 0xFF;
