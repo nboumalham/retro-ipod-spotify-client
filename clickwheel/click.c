@@ -10,6 +10,8 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <time.h>       // for time()
+#include <pthread.h>
 
 #define CLOCK_PIN 23
 #define DATA_PIN 5
@@ -44,6 +46,8 @@ uint8_t dataBit = 1;
 uint8_t lastPosition = 255;
 int hapticWaveId = -1;
 
+time_t begin;
+time_t end;
 int offTimer = 0;
 
 char buttons[] = {
@@ -76,6 +80,29 @@ void printBinary(uint32_t value) {
     printf("\n");
 }
 
+
+// launch a shutdown timer in a different thread
+void* shutdownTimer(void* p){
+  // Print value received as argument:
+  printf("[SHUT] Starting shutdown verification timer");
+  sleep(6);
+  printf("[SHUT] checking is time to shutdown");
+	if (begin != end) {
+    end = time(NULL);
+		offTimer = end - begin;
+    printf("Off button pressed for : %d\n", offTimer);
+		if (offTimer > 5) {
+      printf("[SHUT] YES");
+      system("shutdown -P now");
+    }
+    else {
+      printf("[SHUT] NOPE");      
+    }
+  }
+  pthread_exit(NULL);
+}
+
+
 // parse packet and broadcast data
 void sendPacket() {
     if ((bits & PACKET_START) != PACKET_START) {
@@ -92,16 +119,18 @@ void sendPacket() {
             buffer[BUTTON_STATE_INDEX] = 1;
             printf("button pressed: %d\n", buttonIndex);
             if (buttonIndex == 11) {
-              offTimer++;
-              printf("shutting down in : %d\n", offTimer);
+              pthread_t id;
+              pthread_create(&id, NULL, shutdownTimer, NULL);
+
+              begin = time(NULL);
+
             }
         } else if (!((bits >> buttonIndex) & 1) && (lastBits >> buttonIndex) & 1) {
             buffer[BUTTON_INDEX] = buttonIndex;
             buffer[BUTTON_STATE_INDEX] = 0;
             printf("button released: %d\n", buttonIndex);
             if (buttonIndex == 11) {
-              offTimer = 0;
-              printf("No longer shutting down : %d\n", offTimer);
+              	begin = end = time(NULL);
             }
         }
     }
@@ -169,6 +198,7 @@ void onDataEdge(int gpio, int level, uint32_t tick) {
     dataBit = level;
 }
 
+
 int main(void *args){
 
     // Creating socket file descriptor
@@ -208,8 +238,10 @@ int main(void *args){
     gpioSetAlertFunc(CLOCK_PIN, onClockEdge);
     gpioSetAlertFunc(DATA_PIN, onDataEdge);
 
+    begin = end = time(NULL);
+
     while(1) {
-      sleep(1000);
+	     sleep(10000);
     };
     gpioTerminate();
 }
