@@ -42,8 +42,6 @@ uint8_t dataBit = 1;
 uint8_t lastPosition = 255;
 int hapticWaveId = -1;
 
-int offTimer = 0;
-
 char buttons[] = {
     CENTER_BUTTON_BIT,
     LEFT_BUTTON_BIT,
