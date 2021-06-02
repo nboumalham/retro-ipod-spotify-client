@@ -53,8 +53,10 @@ class BootRendering(Rendering):
 
     def load_spotify(self, page):
         page.loading = True
-        thread1 = threading.Thread(target = spotify_manager.refresh_data, args=(page.my_queue,))
-        #thread1 = threading.Thread(target = spotify_manager.refresh_devices, args=(page.my_queue,))
+        if(not TEST_ENV) :
+            thread1 = threading.Thread(target = spotify_manager.refresh_data, args=(page.my_queue,))
+        else :
+            thread1 = threading.Thread(target = spotify_manager.refresh_devices, args=(page.my_queue,))
         thread1.start()
 
     def unsubscribe(self):
@@ -237,6 +239,7 @@ class NowPlayingPage():
         if (vol < 100) :
             newVol = vol + 5
             self.live_render.target_volume = newVol
+            self.live_render.refresh()
 
 
     def nav_down(self):
@@ -244,6 +247,7 @@ class NowPlayingPage():
         if (vol > 0) :
             newVol = vol - 5
             self.live_render.target_volume = newVol
+            self.live_render.refresh()
 
 
     def nav_select(self):
