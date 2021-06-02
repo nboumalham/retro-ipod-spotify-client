@@ -25,7 +25,7 @@ PREV_KEY_CODE = 2818092 if platform == "darwin" else 0
 NEXT_KEY_CODE = 3080238 if platform == "darwin" else 0
 PLAY_KEY_CODE = 3211296 if platform == "darwin" else 0
 
-SCREEN_TIMEOUT_SECONDS = 60
+SCREEN_TIMEOUT_SECONDS = 30
 
 wheel_position = -1
 last_button = -1
@@ -242,7 +242,7 @@ class NowPlayingFrame(BaseFrame):
         self.volume_down_indicator.grid(row=0, column=0, sticky="w")
 
         self.frame_img = ImageTk.PhotoImage(self.flattenAlpha(Image.open('prog_frame.png')))
-        self.progress_frame = tk.Canvas(self.volume_progress_frame, height=int(72 * SCALE), width=self.frame_img.width(), bg=SPOT_BLACK, highlightthickness=0)
+        self.progress_frame = tk.Canvas(self.volume_progress_frame, height=int(72 * SCALE), width=int (self.frame_img.width()-2), bg=SPOT_BLACK, highlightthickness=0)
         self.progress_frame.grid(row=0, column=1)
 
 
@@ -646,7 +646,7 @@ def app_main_loop():
             data = socket.recv(128)
             processInput(app, data)
         loop_count += 1
-        if (loop_count >= 300):
+        if (loop_count >= 5000):
             if (time.time() - last_interaction > SCREEN_TIMEOUT_SECONDS and screen_on):
                 screen_sleep()
             render(app, page.render())
