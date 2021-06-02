@@ -9,8 +9,8 @@ class SystemController():
         return self.system_volume
 
     def set_volume(self, vol):
-        #th = threading.Thread(target=self.__set_system_volume, args=(vol,))
-        #th.start()
+        th = threading.Thread(target=self.__set_system_volume, args=(vol,))
+        th.start()
         self.system_volume = vol
 
     def __set_system_volume(self, vol):

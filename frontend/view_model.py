@@ -97,12 +97,11 @@ class NowPlayingRendering(Rendering):
             return
         if self.after_id:
             self.app.after_cancel(self.after_id)
-        #volume
-        if(SystemController.get_volume() != self.target_volume) :
-            SystemController.set_volume(self.target_volume)
-
         if (volume == None):
             now_playing = spotify_manager.DATASTORE.now_playing
+            #volume
+            if(SystemController.get_volume() != self.target_volume) :
+                SystemController.set_volume(self.target_volume)
         else :
             now_playing = {'name':'volume', 'artist':'', 'album':'', 'context_name':'', 'is_playing': '', 'progress': self.target_volume, 'duration' : 100, 'track_index': -1}
         now_playing['volume'] = str(self.target_volume)
