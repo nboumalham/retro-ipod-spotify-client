@@ -227,31 +227,56 @@ class NowPlayingFrame(BaseFrame):
         self.album_label.grid(row=3, column=0,sticky ="we", padx=(10, 10))
         self.track_label = Marquee(contentFrame, text="")
         self.track_label.grid(row=1, column=0,sticky ="we", padx=(10, 10))
-        self.progress_frame = tk.Canvas(contentFrame, height=int(72 * SCALE), bg=SPOT_BLACK, highlightthickness=0)
-        self.progress_frame.grid(row=4, column=0,sticky ="we", pady=(int(52 * SCALE), 0), padx=(40, 40))
+
+
+        self.volume_down_image = ImageTk.PhotoImage(self.flattenAlpha(Image.open('pod_volume_down.png')))
+        self.volume_up_image = ImageTk.PhotoImage(self.flattenAlpha(Image.open('pod_volume_up.png')))
+        self.volume_space_image = ImageTk.PhotoImage(self.flattenAlpha(Image.open('pod_volume_empty.png')))
+
+
+        self.volume_progress_frame = tk.Canvas(contentFrame, bg=SPOT_BLACK, highlightthickness=0)
+        self.volume_progress_frame.grid(row=4, column=0)
+
+        self.volume_down_indicator = tk.Label(self.volume_progress_frame , image=self.volume_space_image, background=SPOT_BLACK)
+        #self.volume_down_indicator.image = self.volume_down_image
+        self.volume_down_indicator.grid(row=0, column=0, sticky="w")
+
         self.frame_img = ImageTk.PhotoImage(self.flattenAlpha(Image.open('prog_frame.png')))
+        self.progress_frame = tk.Canvas(self.volume_progress_frame, height=int(72 * SCALE), width=self.frame_img.width(), bg=SPOT_BLACK, highlightthickness=0)
+        self.progress_frame.grid(row=0, column=1)
+
+
+        self.volume_up_indicator = tk.Label(self.volume_progress_frame, image=self.volume_space_image, background=SPOT_BLACK)
+        #self.volume_up_indicator.image = self.volume_up_image
+        self.volume_up_indicator.grid(row=0, column=2, sticky ="e")
+
+
         self.time_frame = tk.Canvas(contentFrame, bg=SPOT_BLACK, highlightthickness=0)
         self.time_frame.grid(row=5, column=0,sticky ="we", padx=0, pady=(10, 0))
         self.time_frame.grid_columnconfigure(0, weight=1)
         self.elapsed_time = tk.Label(self.time_frame, text ="00:00", font = LARGEFONT, background=SPOT_BLACK, foreground=SPOT_GREEN)
         self.elapsed_time.grid(row=0, column=0, sticky ="nw", padx = int(40 * SCALE))
+
         self.remaining_time = tk.Label(self.time_frame, text ="-00:00", font = LARGEFONT, background=SPOT_BLACK, foreground=SPOT_GREEN)
         self.remaining_time.grid(row=0, column=1, sticky ="ne", padx = int(60 * SCALE))
+
         self.cached_album = None
         self.cached_artist = None
 
     def update_now_playing(self, now_playing):
         if not self.inflated:
-            parent_width = self.winfo_width()
+            parent_width = self.progress_frame.winfo_width()
+            print(parent_width)
             if parent_width > 2:
-                self.midpoint = (parent_width / 2) - 40
-                self.progress_width = self.frame_img.width()
+                self.midpoint = (parent_width / 2)
+                self.progress_width = parent_width
                 self.progress_start_x = self.midpoint - self.progress_width / 2
-                self.progress = self.progress_frame.create_rectangle(self.progress_start_x, 0, self.midpoint, int(72 * SCALE) , fill=SPOT_GREEN)
+                self.progress = self.progress_frame.create_rectangle(self.progress_start_x, 0, self.midpoint, 0 , fill=SPOT_GREEN)
                 self.progress_frame.create_image(self.midpoint, (self.frame_img.height() - 1)/2, image=self.frame_img)
                 self.inflated = True
         if not now_playing:
             return
+
         self.header_volume_label.configure(text=now_playing['volume'])
         self.track_label.set_text(now_playing['name'])
         artist = now_playing['artist']
@@ -268,15 +293,34 @@ class NowPlayingFrame(BaseFrame):
         truncd_context = context_name if context_name else "Now Playing"
         truncd_context = truncd_context if len(truncd_context) < 20 else truncd_context[0:17] + "..."
         self.header_label.configure(text=truncd_context)
-        update_delta = 0 if not now_playing['is_playing'] else (time.time() - now_playing["timestamp"]) * 1000.0
-        adjusted_progress_ms = now_playing['progress'] + update_delta
-        adjusted_remaining_ms = max(0, now_playing['duration'] - adjusted_progress_ms)
-        if self.update_time:
-            progress_txt = ":".join(str(timedelta(milliseconds=adjusted_progress_ms)).split('.')[0].split(':')[1:3])
-            remaining_txt = "-" + ":".join(str(timedelta(milliseconds=adjusted_remaining_ms)).split('.')[0].split(':')[1:3])
-            self.elapsed_time.configure(text=progress_txt)
-            self.remaining_time.configure(text=remaining_txt)
-        self.update_time = not self.update_time
+
+        adjusted_progress_ms = now_playing['progress']
+
+        if (now_playing['is_playing'] == 'volume'):
+            self.volume_down_indicator.configure(image = self.volume_down_image)
+            self.volume_down_indicator.image = self.volume_down_image
+            self.volume_up_indicator.configure(image = self.volume_up_image)
+            self.volume_up_indicator.image = self.volume_up_image
+
+            self.elapsed_time.configure(text="0")
+            self.remaining_time.configure(text="100")
+            self.update_time = True
+        else:
+            self.volume_down_indicator.configure(image = self.volume_space_image)
+            self.volume_down_indicator.image = self.volume_space_image
+            self.volume_up_indicator.configure(image = self.volume_space_image)
+            self.volume_up_indicator.image = self.volume_space_image
+
+            update_delta = 0 if not now_playing['is_playing'] else (time.time() - now_playing["timestamp"]) * 1000.0
+            adjusted_progress_ms = now_playing['progress'] + update_delta
+            adjusted_remaining_ms = max(0, now_playing['duration'] - adjusted_progress_ms)
+            if self.update_time:
+                progress_txt = ":".join(str(timedelta(milliseconds=adjusted_progress_ms)).split('.')[0].split(':')[1:3])
+                remaining_txt = "-" + ":".join(str(timedelta(milliseconds=adjusted_remaining_ms)).split('.')[0].split(':')[1:3])
+                self.elapsed_time.configure(text=progress_txt)
+                self.remaining_time.configure(text=remaining_txt)
+            self.update_time = not self.update_time
+
         if self.inflated:
             adjusted_progress_pct = min(1.0, adjusted_progress_ms / now_playing['duration'])
             self.progress_frame.coords(self.progress, self.progress_start_x, 0, self.progress_width * adjusted_progress_pct + self.progress_start_x, int(72 * SCALE))
