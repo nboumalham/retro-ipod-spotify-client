@@ -92,7 +92,7 @@ class NowPlayingRendering(Rendering):
         if new_callback:
             self.refresh()
 
-    def refresh(self):
+    def refresh(self, volume=None):
         if not self.callback:
             return
         if self.after_id:
@@ -101,7 +101,10 @@ class NowPlayingRendering(Rendering):
         if(SystemController.get_volume() != self.target_volume) :
             SystemController.set_volume(self.target_volume)
 
-        now_playing = spotify_manager.DATASTORE.now_playing
+        if (volume == None):
+            now_playing = spotify_manager.DATASTORE.now_playing
+        else :
+            now_playing = {'name':'volume', 'artist':'', 'album':'', 'context_name':'', 'is_playing': '', 'progress': self.target_volume, 'duration' : 100, 'track_index': -1}
         now_playing['volume'] = str(self.target_volume)
         self.callback(now_playing)
         self.after_id = self.app.after(500, lambda: self.refresh())
@@ -239,16 +242,14 @@ class NowPlayingPage():
         if (vol < 100) :
             newVol = vol + 5
             self.live_render.target_volume = newVol
-            self.live_render.refresh()
-
+            self.live_render.refresh(True)
 
     def nav_down(self):
         vol = self.live_render.target_volume
         if (vol > 0) :
             newVol = vol - 5
             self.live_render.target_volume = newVol
-            self.live_render.refresh()
-
+            self.live_render.refresh(True)
 
     def nav_select(self):
         return self
