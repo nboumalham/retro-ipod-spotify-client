@@ -1,6 +1,6 @@
 import redis
 import pickle
-from functools import lru_cache 
+from functools import lru_cache
 
 class Datastore():
     def __init__(self):
@@ -45,7 +45,7 @@ class Datastore():
 
     def setArtist(self, index, artist):
         self.r.set("artist:"+str(index), pickle.dumps(artist))
-    
+
     @lru_cache(maxsize=50)
     def getPlaylist(self, index):
         playlist_uri = self.r.get("playlist-index:"+str(index))

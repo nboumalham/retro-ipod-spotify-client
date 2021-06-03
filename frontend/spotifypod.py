@@ -657,5 +657,5 @@ def app_main_loop():
         app.after(2, app_main_loop)
 
 app.bind('<KeyPress>', onKeyPress)
-app.after(1000, app_main_loop)
+app.after(300, app_main_loop)
 app.mainloop()

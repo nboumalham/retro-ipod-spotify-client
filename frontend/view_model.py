@@ -13,6 +13,7 @@ SEARCH_RENDER = 2
 BOOT_RENDER = 3
 
 SystemController = system_controller.SystemController()
+Bluetoothctl = system_controller.Bluetoothctl()
 #spotify_manager.refresh_data()
 
 class LineItem():
@@ -465,11 +466,18 @@ class WifiPage(MenuPage):
         self.page_start = 0
 
 
-class BluetoothPage(MenuPage):
+class BluetoothPage(PlaylistsPage):
     def __init__(self, previous_page):
-        super().__init__("Bluetooth", previous_page, has_sub_page=True)
-        self.index = 0
-        self.page_start = 0
+        super().__init__(previous_page)
+
+
+    def get_title(self):
+        return "Bluetooth"
+
+    def get_content(self):
+        print(Bluetoothctl.get_paired_devices())
+        return spotify_manager.DATASTORE.getAllSavedAlbums()
+
 
 class ShutdownPage(MenuPage):
     def __init__(self, previous_page):
