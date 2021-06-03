@@ -646,7 +646,7 @@ def app_main_loop():
             data = socket.recv(128)
             processInput(app, data)
         loop_count += 1
-        if (loop_count >= 5000):
+        if (loop_count >= 500):
             if (time.time() - last_interaction > SCREEN_TIMEOUT_SECONDS and screen_on):
                 screen_sleep()
             render(app, page.render())
@@ -657,5 +657,5 @@ def app_main_loop():
         app.after(2, app_main_loop)
 
 app.bind('<KeyPress>', onKeyPress)
-app.after(5, app_main_loop)
+app.after(300, app_main_loop)
 app.mainloop()
