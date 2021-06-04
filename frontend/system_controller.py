@@ -111,6 +111,8 @@ class Bluetoothctl():
                     device = self.parse_device_info(line)
                     if device:
                         paired_devices.append(device)
+        else :
+            return [{'mac_address': 'FA:F2:55:FD:01:FB', 'name': 'MX Master'}, {'mac_address': '38:EC:0D:21:20:A7', 'name': 'Nassib’s AirPods'}, {'mac_address': 'EC:81:93:54:51:FD', 'name': 'Logitech BT Adapter'}]
         return paired_devices
 
     def get_discoverable_devices(self):

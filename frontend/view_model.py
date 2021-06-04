@@ -466,18 +466,38 @@ class WifiPage(MenuPage):
         self.page_start = 0
 
 
-class BluetoothPage(PlaylistsPage):
-    def __init__(self, previous_page):
-        super().__init__(previous_page)
+class BluetoothItem(MenuPage):
+    def __init__(self, device, previous_page):
+        super().__init__(device['name'], previous_page, has_sub_page=False)
+        self.device = device
 
+    def render(self):
+        print('ppoppi')
+
+
+class BluetoothPage(MenuPage):
+    def __init__(self, previous_page):
+        super().__init__(self.get_title(), previous_page, has_sub_page=True)
+        self.devices = self.get_content()
+        self.num_devices = len(self.devices)
 
     def get_title(self):
         return "Bluetooth"
 
     def get_content(self):
-        print(Bluetoothctl.get_paired_devices())
-        return spotify_manager.DATASTORE.getAllSavedAlbums()
+        return Bluetoothctl.get_paired_devices()
 
+    def nav_select(self):
+        deviceItem = self.page_at(self.index)
+        Bluetoothctl.connect(deviceItem.device['mac_address'])
+        return self.previous_page
+
+    def total_size(self):
+        return self.num_devices
+
+    @lru_cache(maxsize=15)
+    def page_at(self, index):
+        return BluetoothItem(self.devices[index], self)
 
 class ShutdownPage(MenuPage):
     def __init__(self, previous_page):
