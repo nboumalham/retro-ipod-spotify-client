@@ -49,7 +49,7 @@ int hapticWaveId = -1;
 time_t begin;
 time_t end;
 int offTimer = 0;
-int locked = 0
+int locked = 0;
 
 char buttons[] = {
   CENTER_BUTTON_BIT,
@@ -116,9 +116,9 @@ void* lockTimer(void* p){
     if (offTimer > 3) {
       printf("[lock] YES");
       if (locked == 0) {
-        locked = 1
+        locked = 1;
       } else {
-        locked = 0
+        locked = 0;
       }
     }
     else {
