@@ -25,7 +25,7 @@ PREV_KEY_CODE = 2818092 if platform == "darwin" else 0
 NEXT_KEY_CODE = 3080238 if platform == "darwin" else 0
 PLAY_KEY_CODE = 3211296 if platform == "darwin" else 0
 
-SCREEN_TIMEOUT_SECONDS = 20
+SCREEN_TIMEOUT_SECONDS = 8
 
 wheel_position = -1
 last_button = -1
