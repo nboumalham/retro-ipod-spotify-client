@@ -340,7 +340,7 @@ class PlaylistsPage(MenuPage):
         super().__init__(self.get_title(), previous_page, has_sub_page=True)
         self.playlists = self.get_content()
         self.num_playlists = len(self.playlists)
-                
+
         self.playlists.sort(key=self.get_idx) # sort playlists to keep order as arranged in Spotify library
 
     def get_title(self):
@@ -351,7 +351,10 @@ class PlaylistsPage(MenuPage):
 
     def get_idx(self, e): # function to get idx from UserPlaylist for sorting
         if type(e) == spotify_manager.UserPlaylist: # self.playlists also contains albums as it seems and they don't have the idx value
-            return e.idx
+            try:
+                return e.idx
+            except AttributeError:
+                return 0
         else:
             return 0
 
