@@ -336,15 +336,12 @@ class NowPlayingFrame(BaseFrame):
 class BootFrame(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        self.green_arrow_image = ImageTk.PhotoImage(flattenAlpha(Image.open('boot_logo.png')))
+        self.green_arrow_image = ImageTk.PhotoImage(Image.open('boot_logo.png'))
         header_container = tk.Canvas(self, bg=SPOT_BLACK)
         header_container.pack(side="bottom", fill="both", expand=True)
         imgLabel = tk.Label(header_container, image=self.green_arrow_image, background=SPOT_BLACK)
-        self.progressLabel = tk.Label(header_container, text="Loading", background=SPOT_BLACK)
         imgLabel.image = self.green_arrow_image
-        imgLabel.pack(side="top", fill="both", expand=True)
-        self.progressLabel.pack(side="bottom", fill="both", expand=True)
-
+        imgLabel.pack(fill="both", expand=True)
 
 
 
