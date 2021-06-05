@@ -107,7 +107,7 @@ void* shutdownTimer(void* p){
 void* lockTimer(void* p){
   // Print value received as argument:
   printf("[SHUT] Starting lock verification timer");
-  sleep(3);
+  sleep(2);
   printf("[SHUT] checking is time to shutdown");
   if (begin != end) {
     end = time(NULL);
