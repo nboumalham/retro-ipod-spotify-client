@@ -445,7 +445,6 @@ class SettingsPage(MenuPage):
             AboutPage(self),
             WifiPage(self),
             BluetoothPage(self),
-            ShutdownPage(self)
         ]
         self.index = 0
         self.page_start = 0
@@ -470,9 +469,6 @@ class BluetoothItem(MenuPage):
     def __init__(self, device, previous_page):
         super().__init__(device['name'], previous_page, has_sub_page=False)
         self.device = device
-
-    def render(self):
-        print('ppoppi')
 
 
 class BluetoothPage(MenuPage):
@@ -499,15 +495,6 @@ class BluetoothPage(MenuPage):
     def page_at(self, index):
         return BluetoothItem(self.devices[index], self)
 
-class ShutdownPage(MenuPage):
-    def __init__(self, previous_page):
-        super().__init__("Shutdown", previous_page, has_sub_page=True)
-        self.index = 0
-        self.page_start = 0
-
-    def nav_select(self):
-        os.system('shutdown -s')
-        exit()
 
 class AboutLineItem():
     def __init__(self, title = "", value ="", has_sub_page = False):
