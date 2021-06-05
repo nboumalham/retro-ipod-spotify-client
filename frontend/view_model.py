@@ -446,10 +446,6 @@ class ArtistsPage(MenuPage):
         command = NowPlayingCommand(lambda: spotify_manager.play_artist(artist.uri))
         return NowPlayingPage(self, artist.name, command)
 
-class SingleArtistPage(MenuPage):
-    def __init__(self, artistName, previous_page):
-        super().__init__(artistName, previous_page, has_sub_page=True)
-
 class SettingsPage(MenuPage):
     def __init__(self, previous_page):
         super().__init__("Settings", previous_page, has_sub_page=True)

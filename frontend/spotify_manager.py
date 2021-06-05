@@ -43,7 +43,7 @@ class UserArtist():
     def __str__(self):
         return self.name
 
-class UserPlaylist(): 
+class UserPlaylist():
     __slots__ = ['name', 'idx', 'uri', 'track_count']
     def __init__(self, name, idx, uri, track_count):
         self.name = name
@@ -176,14 +176,20 @@ def refresh_data(out_queue):
 
     offset = 0
     results = sp.current_user_followed_artists(limit=pageSize)
+    artistList = []
     while(results['artists']['next']):
         for idx, item in enumerate(results['artists']['items']):
-            DATASTORE.setArtist(idx + offset, UserArtist(item['name'], item['uri']))
+            artistList.append({'id': idx + offset, 'artist' : UserArtist(item['name'], item['uri'])})
         results = sp.next(results['artists'])
         offset = offset + pageSize
 
     for idx, item in enumerate(results['artists']['items']):
-        DATASTORE.setArtist(idx + offset, UserArtist(item['name'], item['uri']))
+            artistList.append({'id': idx + offset, 'artist' : UserArtist(item['name'], item['uri'])})
+#   Once all pages fetched sort them
+    artistList.sort(key=lambda h: h['artist'].name)
+#   Insert them in DB in the right order
+    for idx, item in enumerate(artistList) :
+        DATASTORE.setArtist(idx, item['artist'])
 
     print("Spotify artists fetched: " + str(DATASTORE.getArtistCount()))
 
