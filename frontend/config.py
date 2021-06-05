@@ -16,6 +16,7 @@ try:
     TEST_ENV = False
 except:
     TEST_ENV = True
+    gpio = None
 
 SCALE = SCREEN_HEIGHT / 1060
 

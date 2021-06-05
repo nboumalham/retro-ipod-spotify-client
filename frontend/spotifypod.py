@@ -25,7 +25,7 @@ PREV_KEY_CODE = 2818092 if platform == "darwin" else 0
 NEXT_KEY_CODE = 3080238 if platform == "darwin" else 0
 PLAY_KEY_CODE = 3211296 if platform == "darwin" else 0
 
-SCREEN_TIMEOUT_SECONDS = 30
+SCREEN_TIMEOUT_SECONDS = 20
 
 wheel_position = -1
 last_button = -1
@@ -37,11 +37,15 @@ screen_on = True
 def screen_sleep():
     global screen_on
     screen_on = False
+    if(gpio is not None):
+        os.system("echo '0' > /sys/class/gpio/gpio18/value")
     os.system('xset -display :0 dpms force off')
 
 def screen_wake():
     global screen_on
     screen_on = True
+    if(gpio is not None):
+        os.system("echo '1' > /sys/class/gpio/gpio18/value")
     os.system('xset -display :0 dpms force on')
 
 def flattenAlpha(img):
