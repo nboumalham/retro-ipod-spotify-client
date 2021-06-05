@@ -31,7 +31,6 @@ class Audioctl():
         output_devices = []
         for path in result:
             output_devices.append({'name': path.description, 'index' : path.index, 'connected' : True})
-        print(output_devices)
         return output_devices
 
     def select(self, device):
