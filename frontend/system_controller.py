@@ -1,4 +1,5 @@
 import alsaaudio
+import pulsectl
 import threading
 from config import TEST_ENV
 import pydbus
@@ -21,6 +22,23 @@ class SystemController():
         m.setvolume(vol)
 
 
+class Audioctl():
+    def __init__(self):
+        self.pulse = pulsectl.Pulse('my-client-name')
+
+    def get_audio_output_devices(self):
+        result = self.pulse.sink_list()
+        output_devices = []
+        for path in result:
+            output_devices.append({'name': path.description, 'index' : path.index, 'connected' : True})
+        print(output_devices)
+        return output_devices
+
+    def select(self, device):
+        result = self.pulse.sink_input_list()
+        for path in result:
+            self.pulse.sink_input_move(path.index ,device['index'])
+
 class Bluetoothctl():
 
     def __init__(self):
@@ -30,8 +48,6 @@ class Bluetoothctl():
         self.bus = pydbus.SystemBus()
         self.adapter = self.bus.get(self.bluez_service, self.adapter_path)
         self.mngr = self.bus.get(self.bluez_service, '/')
-
-        self.connected_device = None
 
     def get_paired_devices(self):
         return self.get_devices('Paired')
@@ -49,11 +65,6 @@ class Bluetoothctl():
                 icon = mngd_objs[path].get('org.bluez.Device1', {}).get('Icon')
                 connected = mngd_objs[path].get('org.bluez.Device1', {}).get('Connected')
                 name = ('[o] ' if connected else '[ ] ')  + mngd_objs[path].get('org.bluez.Device1', {}).get('Name')
-
-                device_path = f"{self.adapter_path}/dev_{addr.replace(':', '_')}"
-                device = self.bus.get(self.bluez_service, device_path)
-                self.connected_device = device
-
                 paired_devices.append({'name': name, 'mac_address' : addr, 'icon' : icon, 'connected' : connected})
         return paired_devices
 
@@ -68,17 +79,9 @@ class Bluetoothctl():
     def disconnect(self, mac_address):
         device_path = f"{self.adapter_path}/dev_{mac_address.replace(':', '_')}"
         device = self.bus.get(self.bluez_service, device_path)
-        self.connected_device = None
-        return self.connected_device
+        device.Disconnect()
 
     def connect(self, mac_address):
-        for connected_device in self.get_connected_devices():
-            self.disconnect(connected_device['mac_address'])
-        self.connected_device = None
-
         device_path = f"{self.adapter_path}/dev_{mac_address.replace(':', '_')}"
         device = self.bus.get(self.bluez_service, device_path)
         device.Connect()
-        self.connected_device = device
-        #print(device['name'] + " now connected")
-        return self.connected_device

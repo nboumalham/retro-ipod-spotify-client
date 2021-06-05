@@ -570,7 +570,7 @@ def render_boot(app, boot_render):
     boot_render.subscribe(app, page, done_booting)
 
 def render(app, render):
-    if (render.type == MENU_RENDER_TYPE):
+    if (render.type == MENU_RENDER_TYPE or render.type == MENU_RENDER_TYPE):
         render_menu(app, render)
     elif (render.type == NOW_PLAYING_RENDER):
         render_now_playing(app, render)

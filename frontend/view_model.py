@@ -14,6 +14,7 @@ BOOT_RENDER = 3
 
 SystemController = system_controller.SystemController()
 Bluetoothctl = system_controller.Bluetoothctl()
+Audioctl = system_controller.Audioctl()
 #spotify_manager.refresh_data()
 
 class LineItem():
@@ -443,11 +444,16 @@ class SettingsPage(MenuPage):
 
         self.pages = [
             AboutPage(self),
-            WifiPage(self),
+            #WifiPage(self),
+            AudioPage(self),
             BluetoothPage(self),
         ]
         self.index = 0
         self.page_start = 0
+
+    def nav_select(self):
+        self.page_at(self.index).refresh()
+        return self.page_at(self.index)
 
     def get_pages(self):
         return self.pages
@@ -469,7 +475,6 @@ class BluetoothItem(MenuPage):
     def __init__(self, device, previous_page):
         super().__init__(device['name'], previous_page, has_sub_page=False)
         self.device = device
-
 
 class BluetoothPage(MenuPage):
     def __init__(self, previous_page):
@@ -495,6 +500,39 @@ class BluetoothPage(MenuPage):
 
     def page_at(self, index):
         return BluetoothItem(self.devices[index], self)
+
+    def refresh(self):
+        self.devices = self.get_content()
+        self.num_devices = len(self.devices)
+
+class AudioPage(MenuPage):
+    def __init__(self, previous_page):
+        super().__init__(self.get_title(), previous_page, has_sub_page=True)
+        self.devices = self.get_content()
+        self.num_devices = len(self.devices)
+
+    def get_title(self):
+        return "Audio Output"
+
+    def get_content(self):
+        return Audioctl.get_audio_output_devices()
+
+    def nav_select(self):
+        deviceItem = self.page_at(self.index)
+        Audioctl.select(deviceItem.device)
+        self.devices = self.get_content()
+        self.num_devices = len(self.devices)
+        return self.previous_page
+
+    def total_size(self):
+        return self.num_devices
+
+    def page_at(self, index):
+        return BluetoothItem(self.devices[index], self)
+
+    def refresh(self):
+        self.devices = self.get_content()
+        self.num_devices = len(self.devices)
 
 
 class AboutLineItem():
@@ -581,6 +619,10 @@ class AboutPage(MenuPage):
     def page_at(self, index):
         #command = NowPlayingCommand(lambda: spotify_manager.play_from_playlist(self.playlist.uri, track.uri, None))
         return self.aboutList[index]
+
+    def refresh(self):
+        self.aboutList = self.get_content()
+        self.num_list = len(self.aboutList)
 
     def render(self):
         lines = []
