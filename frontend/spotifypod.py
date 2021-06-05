@@ -258,10 +258,10 @@ class NowPlayingFrame(BaseFrame):
         self.time_frame = tk.Canvas(contentFrame, bg=SPOT_BLACK, highlightthickness=0)
         self.time_frame.grid(row=5, column=0,sticky ="we", padx=0, pady=(10, 0))
         self.time_frame.grid_columnconfigure(0, weight=1)
-        self.elapsed_time = tk.Label(self.time_frame, text ="00:00", font = LARGEFONT, background=SPOT_BLACK, foreground=SPOT_GREEN)
+        self.elapsed_time = tk.Label(self.time_frame, text ="00:00", font = MED_FONT, background=SPOT_BLACK, foreground=SPOT_GREEN)
         self.elapsed_time.grid(row=0, column=0, sticky ="nw", padx = int(40 * SCALE))
 
-        self.remaining_time = tk.Label(self.time_frame, text ="-00:00", font = LARGEFONT, background=SPOT_BLACK, foreground=SPOT_GREEN)
+        self.remaining_time = tk.Label(self.time_frame, text ="-00:00", font = MED_FONT, background=SPOT_BLACK, foreground=SPOT_GREEN)
         self.remaining_time.grid(row=0, column=1, sticky ="ne", padx = int(60 * SCALE))
 
         self.cached_album = None

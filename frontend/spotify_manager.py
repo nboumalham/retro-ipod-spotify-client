@@ -198,8 +198,8 @@ def parse_show(show):
     for _, episode in enumerate(show['episodes']['items']):
         episodes.append(UserEpisode(episode['name'], publisher, show['name'], episode['uri']))
     return (UserShow(show['name'], publisher, len(episodes), show['uri']), episodes)
-    
-def refresh_data():
+
+def refresh_data(out_queue):
     DATASTORE.clear()
     results = sp.current_user_saved_tracks(limit=pageSize, offset=0)
     while(results['next']):
@@ -414,7 +414,7 @@ def get_now_playing_episode(response = None):
         'track_index': -1,
         'timestamp': time.time()
     }
-    
+
     return now_playing
 
 def search(query):

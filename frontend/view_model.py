@@ -343,7 +343,7 @@ class ShowsPage(MenuPage):
 
     def get_title(self):
         return "Podcasts"
-    
+
     def get_content(self):
         return spotify_manager.DATASTORE.getAllSavedShows()
 
