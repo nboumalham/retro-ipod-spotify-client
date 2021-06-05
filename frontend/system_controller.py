@@ -2,6 +2,7 @@ import alsaaudio
 import threading
 from config import TEST_ENV
 import pydbus
+import time
 
 class SystemController():
     def __init__(self):
@@ -42,13 +43,36 @@ class Bluetoothctl():
                 icon = mngd_objs[path].get('org.bluez.Device1', {}).get('Icon')
                 connected = mngd_objs[path].get('org.bluez.Device1', {}).get('Connected')
                 name = ('[o] ' if connected else '[ ] ')  + mngd_objs[path].get('org.bluez.Device1', {}).get('Name')
-                print(mngd_objs[path].get('org.bluez.Device1', {}))
+
+                device_path = f"{self.adapter_path}/dev_{addr.replace(':', '_')}"
+                device = self.bus.get(self.bluez_service, device_path)
+                self.connected_device = device
+
                 paired_devices.append({'name': name, 'mac_address' : addr, 'icon' : icon, 'connected' : connected})
         return paired_devices
 
+    def toggle(self, device):
+        if(device['connected']):
+            print(device['name'] + " was connected. Disconnecting")
+            return self.disconnect(device['mac_address'])
+        else :
+            print(device['name'] + " was disconnected. Connecting")
+            return self.connect(device['mac_address'])
+
+    def disconnect(self, mac_address):
+        device_path = f"{self.adapter_path}/dev_{mac_address.replace(':', '_')}"
+        device = self.bus.get(self.bluez_service, device_path)
+        self.connected_device = None
+        return self.connected_device
 
     def connect(self, mac_address):
         device_path = f"{self.adapter_path}/dev_{mac_address.replace(':', '_')}"
         device = self.bus.get(self.bluez_service, device_path)
-        self.connected_device = device.Connect()
+        if (self.connected_device != None):
+            print("Releasing  before connecting target")
+            self.connected_device.Disconnect()
+            time.sleep(5)
+        device.Connect()
+        self.connected_device = device
+        #print(device['name'] + " now connected")
         return self.connected_device
