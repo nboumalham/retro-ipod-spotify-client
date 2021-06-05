@@ -34,10 +34,16 @@ class Bluetoothctl():
         self.connected_device = None
 
     def get_paired_devices(self):
+        return self.get_devices('Paired')
+
+    def get_connected_devices(self):
+        return self.get_devices('Connected')
+
+    def get_devices(self, filter):
         mngd_objs = self.mngr.GetManagedObjects()
         paired_devices = []
         for path in mngd_objs:
-            con_state = mngd_objs[path].get('org.bluez.Device1', {}).get('Paired', False)
+            con_state = mngd_objs[path].get('org.bluez.Device1', {}).get(filter, False)
             if con_state:
                 addr = mngd_objs[path].get('org.bluez.Device1', {}).get('Address')
                 icon = mngd_objs[path].get('org.bluez.Device1', {}).get('Icon')
@@ -66,12 +72,12 @@ class Bluetoothctl():
         return self.connected_device
 
     def connect(self, mac_address):
+        for connected_device in self.get_connected_devices():
+            self.disconnect(connected_device['mac_address'])
+        self.connected_device = None
+
         device_path = f"{self.adapter_path}/dev_{mac_address.replace(':', '_')}"
         device = self.bus.get(self.bluez_service, device_path)
-        if (self.connected_device != None):
-            print("Releasing  before connecting target")
-            self.connected_device.Disconnect()
-            time.sleep(5)
         device.Connect()
         self.connected_device = device
         #print(device['name'] + " now connected")
