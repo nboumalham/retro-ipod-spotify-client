@@ -23,13 +23,14 @@ class SystemController():
 class Bluetoothctl():
 
     def __init__(self):
-
         self.bluez_service = 'org.bluez'
         self.adapter_path = '/org/bluez/hci0'
 
         self.bus = pydbus.SystemBus()
         self.adapter = self.bus.get(self.bluez_service, self.adapter_path)
         self.mngr = self.bus.get(self.bluez_service, '/')
+
+        self.connected_device = None
 
     def get_paired_devices(self):
         mngd_objs = self.mngr.GetManagedObjects()
@@ -38,15 +39,16 @@ class Bluetoothctl():
             con_state = mngd_objs[path].get('org.bluez.Device1', {}).get('Paired', False)
             if con_state:
                 addr = mngd_objs[path].get('org.bluez.Device1', {}).get('Address')
-                name = mngd_objs[path].get('org.bluez.Device1', {}).get('Name')
                 icon = mngd_objs[path].get('org.bluez.Device1', {}).get('Icon')
+                connected = mngd_objs[path].get('org.bluez.Device1', {}).get('Connected')
+                name = ('[o] ' if connected else '[ ] ')  + mngd_objs[path].get('org.bluez.Device1', {}).get('Name')
                 print(mngd_objs[path].get('org.bluez.Device1', {}))
-                paired_devices.append({'name': name, 'mac_address' : addr, 'icon' : icon})
+                paired_devices.append({'name': name, 'mac_address' : addr, 'icon' : icon, 'connected' : connected})
         return paired_devices
 
 
     def connect(self, mac_address):
         device_path = f"{self.adapter_path}/dev_{mac_address.replace(':', '_')}"
         device = self.bus.get(self.bluez_service, device_path)
-        connection_status = device.Connect()
-        return connection_status
+        self.connected_device = device.Connect()
+        return self.connected_device
