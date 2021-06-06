@@ -4,6 +4,7 @@ import threading
 from config import TEST_ENV
 import pydbus
 import time
+from config import logger
 
 class SystemController():
     def __init__(self):
@@ -69,10 +70,10 @@ class Bluetoothctl():
 
     def toggle(self, device):
         if(device['connected']):
-            print(device['name'] + " was connected. Disconnecting")
+            logger.debug(device['name'] + " was connected. Disconnecting")
             return self.disconnect(device['mac_address'])
         else :
-            print(device['name'] + " was disconnected. Connecting")
+            logger.debug(device['name'] + " was disconnected. Connecting")
             return self.connect(device['mac_address'])
 
     def disconnect(self, mac_address):

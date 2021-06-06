@@ -4,6 +4,7 @@ from spotipy.oauth2 import SpotifyOAuth
 import threading
 import time
 import json
+from config import logger
 
 class UserDevice():
     __slots__ = ['id', 'name', 'is_active']
@@ -111,7 +112,7 @@ def check_internet(request):
         result = request()
         has_internet = True
     except Exception as _:
-        print("no ints")
+        logger.error("no ints")
         result = None
         has_internet = False
     return result
@@ -175,7 +176,6 @@ def refresh_devices(out_queue = None):
     DATASTORE.clearDevices()
     for _, item in enumerate(results['devices']):
         if "Spotifypod" in item['name']:
-            print(item['name'])
             device = UserDevice(item['id'], item['name'], item['is_active'])
             DATASTORE.setUserDevice(device)
     if(out_queue is not None) :
@@ -214,7 +214,7 @@ def refresh_data(out_queue):
         track = item['track']
         DATASTORE.setSavedTrack(idx + offset, UserTrack(track['name'], track['artists'][0]['name'], track['album']['name'], track['uri']))
 
-    print("Spotify tracks fetched")
+    logger.debug("Spotify tracks fetched")
 
     offset = 0
     results = sp.current_user_followed_artists(limit=pageSize)
@@ -233,7 +233,7 @@ def refresh_data(out_queue):
     for idx, item in enumerate(artistList) :
         DATASTORE.setArtist(idx, item['artist'])
 
-    print("Spotify artists fetched: " + str(DATASTORE.getArtistCount()))
+    logger.debug("Spotify artists fetched: " + str(DATASTORE.getArtistCount()))
 
     results = sp.current_user_playlists(limit=pageSize)
     totalindex = 0 # variable to preserve playlist sort index when calling offset loop down below
@@ -251,7 +251,7 @@ def refresh_data(out_queue):
         DATASTORE.setPlaylist(UserPlaylist(item['name'], totalindex, item['uri'], len(tracks)), tracks, index=idx + offset)
         totalindex = totalindex + 1
 
-    print("Spotify playlists fetched: " + str(DATASTORE.getPlaylistCount()))
+    logger.debug("Spotify playlists fetched: " + str(DATASTORE.getPlaylistCount()))
 
     results = sp.current_user_saved_albums(limit=pageSize)
     while(results['next']):
@@ -266,14 +266,14 @@ def refresh_data(out_queue):
         album, tracks = parse_album(item['album'])
         DATASTORE.setAlbum(album, tracks, index=idx + offset)
 
-    print("Refreshed user albums")
+    logger.debug("Refreshed user albums")
 
     results = sp.new_releases(limit=pageSize)
     for idx, item in enumerate(results['albums']['items']):
         album, tracks = parse_album(item)
         DATASTORE.setNewRelease(album, tracks, index=idx)
 
-    print("Refreshed new releases")
+    logger.debug("Refreshed new releases")
 
     results = sp.current_user_saved_shows(limit=pageSize)
     if(len(results['items']) > 0):
@@ -282,28 +282,28 @@ def refresh_data(out_queue):
             show, episodes = parse_show(item['show'])
             DATASTORE.setShow(show, episodes, index=idx)
 
-    print("Spotify Shows fetched")
+    logger.debug("Spotify Shows fetched")
 
     refresh_devices()
-    print("Refreshed devices")
+    logger.debug("Refreshed devices")
     out_queue.put(True)
 
 def play_artist(artist_uri, device_id = None):
     if (not device_id):
         devices = DATASTORE.getAllSavedDevices()
         if (len(devices) == 0):
-            print("error! no devices")
+            logger.error("error! no devices")
             return
         device_id = devices[0].id
     response = sp.start_playback(device_id=device_id, context_uri=artist_uri)
     refresh_now_playing()
-    print(response)
+    logger.debug(response)
 
 def play_track(track_uri, device_id = None):
     if (not device_id):
         devices = DATASTORE.getAllSavedDevices()
         if (len(devices) == 0):
-            print("error! no devices")
+            logger.error("error! no devices")
             return
         device_id = devices[0].id
     sp.start_playback(device_id=device_id, uris=[track_uri])
@@ -312,28 +312,28 @@ def play_episode(episode_uri, device_id = None):
     if(not device_id):
         devices = DATASTORE.getAllSavedDevices()
         if(len(devices) == 0):
-            print("error! no devices")
+            logger.error("error! no devices")
             return
         device_id = devices[0].id
     sp.start_playback(device_id=device_id, uris=[episode_uri])
 
 def play_from_playlist(playist_uri, track_uri, device_id = None):
-    print("playing ", playist_uri, track_uri)
+    logger.debug("playing ", playist_uri, track_uri)
     if (not device_id):
         devices = DATASTORE.getAllSavedDevices()
         if (len(devices) == 0):
-            print("error! no devices")
+            logger.error("error! no devices")
             return
         device_id = devices[0].id
     sp.start_playback(device_id=device_id, context_uri=playist_uri, offset={"uri": track_uri})
     refresh_now_playing()
 
 def play_from_show(show_uri, episode_uri, device_id = None):
-    print("playing ", show_uri, episode_uri)
+    logger.debug("playing ", show_uri, episode_uri)
     if(not device_id):
         devices = DATASTORE.getAllSavedDevices()
         if (len(devices) == 0):
-            print("error! no devices")
+            logger.error("error! no devices")
             return
         device_id = devices[0].id
     sp.start_playback(device_id=device_id, context_uri=show_uri, offset={"uri": episode_uri})

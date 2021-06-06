@@ -270,7 +270,6 @@ class NowPlayingFrame(BaseFrame):
     def update_now_playing(self, now_playing):
         if not self.inflated:
             parent_width = self.progress_frame.winfo_width()
-            print(parent_width)
             if parent_width > 2:
                 self.midpoint = (parent_width / 2)
                 self.progress_width = parent_width
@@ -500,7 +499,7 @@ def processInput(app, input):
 
     now = time.time()
     if (now - last_interaction > SCREEN_TIMEOUT_SECONDS):
-        print("waking")
+        logger.debug("waking")
         screen_wake()
     last_interaction = now
 
@@ -523,7 +522,7 @@ def onKeyPress(event):
     elif (c == PLAY_KEY_CODE):
         onPlayPressed()
     else:
-        print("unrecognized key: ", c)
+        logger.warning("unrecognized key: ", c)
 
 def update_search(q, ch, loading, results):
     global app, page

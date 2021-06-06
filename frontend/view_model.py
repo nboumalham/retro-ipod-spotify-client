@@ -518,7 +518,7 @@ class BluetoothPage(MenuPage):
     def nav_select(self):
         deviceItem = self.page_at(self.index)
         Bluetoothctl.toggle(deviceItem.device)
-        self.refresh()
+        return self.previous_page
 
     def total_size(self):
         return self.num_devices
@@ -725,7 +725,7 @@ class SingleTrackPage(MenuPage):
 
     def render(self):
         r = super().render()
-        print("render track")
+        logger.debug("render track")
         context_uri = self.playlist.uri if self.playlist else self.album.uri
         spotify_manager.play_from_playlist(context_uri, self.track.uri, None)
         return r
@@ -738,7 +738,7 @@ class SingleEpisodePage(MenuPage):
 
     def render(self):
         r = super().render()
-        print("render episode")
+        logger.debug("render episode")
         context_uri = self.show.uri
         spotify_manager.play_from_show(context_uri, self.episode.uri, None)
         return r
