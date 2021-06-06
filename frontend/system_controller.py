@@ -63,7 +63,7 @@ class Bluetoothctl():
                 addr = mngd_objs[path].get('org.bluez.Device1', {}).get('Address')
                 icon = mngd_objs[path].get('org.bluez.Device1', {}).get('Icon')
                 connected = mngd_objs[path].get('org.bluez.Device1', {}).get('Connected')
-                name = ('[o] ' if connected else '[ ] ')  + mngd_objs[path].get('org.bluez.Device1', {}).get('Name')
+                name = ('☑ ' if connected else '☐ ')  + mngd_objs[path].get('org.bluez.Device1', {}).get('Name')
                 paired_devices.append({'name': name, 'mac_address' : addr, 'icon' : icon, 'connected' : connected})
         return paired_devices
 

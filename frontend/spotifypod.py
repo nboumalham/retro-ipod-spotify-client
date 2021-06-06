@@ -106,7 +106,7 @@ class tkinterApp(tk.Tk):
 
             frame.grid(row = 0, column = 0, sticky ="nsew")
 
-        self.show_frame(StartPage)
+        self.show_frame(BootFrame)
 
     # to display the current frame passed as
     # parameter
@@ -562,7 +562,7 @@ def done_booting(loaded):
     global app, page
     if(loaded):
         page.render().unsubscribe()
-        page = page.target_page
+        page = page.target_page(None)
         render(app, page.render())
 
 def render_boot(app, boot_render):
@@ -622,7 +622,7 @@ def onDownPressed():
     render(app, page.render())
 
 # Driver Code
-page = BootPage(RootPage(None))
+page = BootPage(RootPage)
 app = tkinterApp()
 render(app, page.render())
 app.overrideredirect(True)
@@ -648,6 +648,9 @@ def app_main_loop():
             processInput(app, data)
         loop_count += 1
         if (loop_count >= 500):
+            if (type(page) is BootPage):
+                last_interaction = time.time()
+
             if (time.time() - last_interaction > SCREEN_TIMEOUT_SECONDS and screen_on):
                 screen_sleep()
             render(app, page.render())

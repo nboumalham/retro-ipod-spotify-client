@@ -518,9 +518,7 @@ class BluetoothPage(MenuPage):
     def nav_select(self):
         deviceItem = self.page_at(self.index)
         Bluetoothctl.toggle(deviceItem.device)
-        self.devices = self.get_content()
-        self.num_devices = len(self.devices)
-        return self.previous_page
+        self.refresh()
 
     def total_size(self):
         return self.num_devices
