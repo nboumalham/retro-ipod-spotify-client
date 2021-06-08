@@ -32,6 +32,5 @@ UDP_PORT = 9090
 MENU_PAGE_SIZE = 6 if SCREEN_HEIGHT < 300 else 7
 
 
-
-logger.basicConfig(filename='pipod.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s', level=logger.WARNING)
+logger.basicConfig(filename='pipod.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s', level=logger.DEBUG)
 logger.debug('Pipod started')

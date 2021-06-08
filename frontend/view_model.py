@@ -658,9 +658,7 @@ class AboutPage(MenuPage):
                 if (page is None) :
                     lines.append(EMPTY_LINE_ITEM)
                 else:
-                    line_type = LINE_TITLE if page.is_title else \
-                        LINE_HIGHLIGHT if i == self.index else LINE_NORMAL
-                    lines.append(LineItem(title = page.header, line_type = line_type, show_arrow = page.has_sub_page, selectable = page.selectable, value = page.value))
+                    lines.append(LineItem(title = page.header, line_type = LINE_NORMAL, show_arrow = page.has_sub_page, selectable = page.selectable, value = page.value))
             else:
                 lines.append(EMPTY_LINE_ITEM)
         return MenuRendering(lines=lines, header=self.header, page_start=self.index, total_count=total_size)
@@ -771,16 +769,35 @@ class BootPage():
     def render(self):
         return BootRendering(False)
 
-class RootPage(MenuPage):
+class SpotifyPage(MenuPage):
     def __init__(self, previous_page):
-        super().__init__("piPod", previous_page, has_sub_page=True)
+        super().__init__("Spotify", previous_page, has_sub_page=True)
         self.pages = [
             ArtistsPage(self),
             AlbumsPage(self),
             NewReleasesPage(self),
             PlaylistsPage(self),
             ShowsPage(self),
-            SearchPage(self),
+            SearchPage(self)
+        ]
+        self.index = 0
+        self.page_start = 0
+
+    def get_pages(self):
+        return self.pages
+
+    def total_size(self):
+        return len(self.get_pages())
+
+    def page_at(self, index):
+        return self.get_pages()[index]
+
+
+class RootPage(MenuPage):
+    def __init__(self, previous_page):
+        super().__init__("piPod", previous_page, has_sub_page=True)
+        self.pages = [
+            SpotifyPage(self),
             SettingsPage(self),
             NowPlayingPage(self, "Now Playing", NowPlayingCommand())
         ]
