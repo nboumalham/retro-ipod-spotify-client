@@ -620,6 +620,23 @@ class AboutPage(MenuPage):
         t = os.popen('uptime -p').read()[3:-1]
         return t
 
+
+    def getUsedSize(self):
+        capacity = "0"
+        try:
+            capacity = os.popen("df -h / | awk 'NR == 2 { print substr($3,1,length($3)) }'").read()[:-1]
+        except:
+            capacity = "ERROR"
+        return capacity
+
+    def getFullSize(self):
+        capacity = "0"
+        try:
+            capacity = os.popen("df -h / | awk 'NR == 2 { print substr($2,1,length($2)) }'").read()[:-1]
+        except:
+            capacity = "ERROR"
+        return capacity
+
     def getcapacity(self):
         # Extract serial from cpuinfo file
         capacity = "0"
@@ -631,10 +648,12 @@ class AboutPage(MenuPage):
 
     def get_content(self):
         aboutList = []
-        aboutList.append(AboutLineItem("Model", "Zero"))
-        aboutList.append(AboutLineItem("Capacity", "32 Gib"))
+        aboutList.append(AboutLineItem("Model", "4th Gen iPod"))
+        aboutList.append(AboutLineItem("Used", self.getUsedSize()))
+        aboutList.append(AboutLineItem("Capacity", self.getFullSize()))
         aboutList.append(AboutLineItem("Version", self.getversion()))
         aboutList.append(AboutLineItem("Serial", self.getserial()))
+        aboutList.append(AboutLineItem("Uptime", self.getuptime()))
         aboutList.append(AboutLineItem("Uptime", self.getuptime()))
         return aboutList
 
