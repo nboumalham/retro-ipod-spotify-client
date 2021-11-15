@@ -626,12 +626,14 @@ def onDownPressed():
 
 
 def on_controller_button_pressed(button):
+    print("[Controller] button pressed")
     if(button.name == "button_b") :
         onSelectPressed()
     elif (button.name == "button_a") :
         onBackPressed()
 
 def on_controller_axis_pressed(axis):
+    print("[Controller] axis pressed")
     if(axis.y == 1) :
         onDownPressed()
     elif (axis.y == -1) :
@@ -649,7 +651,7 @@ try :
     controller.button_x.when_pressed = on_controller_button_pressed
     controller.button_y.when_pressed = on_controller_button_pressed
     controller.hat.when_moved = on_controller_axis_pressed
-    print("Xbox Controller set correctly")
+    print("[Controller] Xbox Controller set correctly")
 except Exception as e :
     print(e)
     pass
