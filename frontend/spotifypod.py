@@ -16,14 +16,15 @@ from sys import platform
 import os
 from base_frame import *
 from config import *
+from xbox360controller import Xbox360Controller
 
 UP_KEY_CODE = 8255233 if platform == "darwin" else 111
 DOWN_KEY_CODE = 8320768 if platform == "darwin" else 116
 LEFT_KEY_CODE = 8124162 if platform == "darwin" else 113
 RIGHT_KEY_CODE = 8189699 if platform == "darwin" else 114
-PREV_KEY_CODE = 2818092 if platform == "darwin" else 0
-NEXT_KEY_CODE = 3080238 if platform == "darwin" else 0
-PLAY_KEY_CODE = 3211296 if platform == "darwin" else 0
+PREV_KEY_CODE = 2818092 if platform == "darwin" else 83
+NEXT_KEY_CODE = 3080238 if platform == "darwin" else 85
+PLAY_KEY_CODE = 3211296 if platform == "darwin" else 90
 
 SCREEN_TIMEOUT_SECONDS = 8
 
@@ -620,6 +621,36 @@ def onDownPressed():
     page.nav_down()
     render(app, page.render())
 
+
+
+
+#xbox controller code (for GPI Case)
+try :
+    controller = Xbox360Controller(0, axis_threshold=0.2)
+    controller.button_a.when_pressed = on_controller_button_pressed
+    controller.button_b.when_pressed = on_controller_button_pressed
+    controller.button_x.when_pressed = on_controller_button_pressed
+    controller.button_y.when_pressed = on_controller_button_pressed
+    controller.hat.when_moved = on_controller_axis_pressed
+
+    def on_controller_button_pressed(button):
+        if(button.name == "button_b") :
+            onSelectPressed()
+        elif (button.name == "button_a") :
+            onBackPressed()
+
+    def on_controller_axis_pressed(axis):
+        if(axis.y == 1) :
+            onDownPressed()
+        elif (axis.y == -1) :
+            onUpPressed()
+        elif(axis.x == 1) :
+            onNextPressed()
+        elif(axis.x == -1) :
+            onPrevPressed()
+except :
+    pass
+    
 # Driver Code
 page = BootPage(RootPage)
 app = tkinterApp()

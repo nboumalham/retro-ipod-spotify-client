@@ -1,3 +1,4 @@
 spotipy
 redis
 pillow
+xbox360
