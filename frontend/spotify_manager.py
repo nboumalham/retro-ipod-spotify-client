@@ -367,7 +367,8 @@ def get_now_playing_track(response = None):
         'progress': response['progress_ms'],
         'context_name': artist,
         'track_index': -1,
-        'timestamp': time.time()
+        'timestamp': time.time(),
+        'volume': 0
     }
     if not context:
         return now_playing
@@ -412,7 +413,8 @@ def get_now_playing_episode(response = None):
         'progress': response['progress_ms'],
         'context_name': publisher,
         'track_index': -1,
-        'timestamp': time.time()
+        'timestamp': time.time(),
+        'volume': 0
     }
 
     return now_playing

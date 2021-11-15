@@ -106,8 +106,8 @@ class NowPlayingRendering(Rendering):
             if(SystemController.get_volume() != self.target_volume) :
                 SystemController.set_volume(self.target_volume)
         else :
-            now_playing = {'name':'', 'artist':'', 'album':'Volume', 'context_name':'', 'is_playing': 'volume', 'progress': self.target_volume, 'duration' : 100, 'track_index': -1}
-        now_playing['volume'] = str(self.target_volume)
+            now_playing = {'name':'', 'artist':'', 'album':'Volume', 'context_name':'', 'is_playing':'', 'volume': '', 'progress': self.target_volume, 'duration' : 100, 'track_index': -1}
+            now_playing['volume'] = str(self.target_volume)
         self.callback(now_playing)
         self.after_id = self.app.after(500, lambda: self.refresh())
 
