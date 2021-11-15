@@ -601,6 +601,7 @@ def onBackPressed():
         page = previous_page
         render(app, page.render())
     else :
+        app.destroy()
         app.quit()
 
 def onNextPressed():
