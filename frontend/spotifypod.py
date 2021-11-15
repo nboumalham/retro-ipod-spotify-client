@@ -649,7 +649,7 @@ try :
     controller.button_x.when_pressed = on_controller_button_pressed
     controller.button_y.when_pressed = on_controller_button_pressed
     controller.hat.when_moved = on_controller_axis_pressed
-
+    print("Xbox Controller set correctly")
 except Exception as e :
     print(e)
     pass
