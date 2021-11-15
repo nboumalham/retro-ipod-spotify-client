@@ -625,7 +625,21 @@ def onDownPressed():
     render(app, page.render())
 
 
+def on_controller_button_pressed(button):
+    if(button.name == "button_b") :
+        onSelectPressed()
+    elif (button.name == "button_a") :
+        onBackPressed()
 
+def on_controller_axis_pressed(axis):
+    if(axis.y == 1) :
+        onDownPressed()
+    elif (axis.y == -1) :
+        onUpPressed()
+    elif(axis.x == 1) :
+        onNextPressed()
+    elif(axis.x == -1) :
+        onPrevPressed()
 
 #xbox controller code (for GPI Case)
 try :
@@ -636,21 +650,6 @@ try :
     controller.button_y.when_pressed = on_controller_button_pressed
     controller.hat.when_moved = on_controller_axis_pressed
 
-    def on_controller_button_pressed(button):
-        if(button.name == "button_b") :
-            onSelectPressed()
-        elif (button.name == "button_a") :
-            onBackPressed()
-
-    def on_controller_axis_pressed(axis):
-        if(axis.y == 1) :
-            onDownPressed()
-        elif (axis.y == -1) :
-            onUpPressed()
-        elif(axis.x == 1) :
-            onNextPressed()
-        elif(axis.x == -1) :
-            onPrevPressed()
 except Exception as e :
     print(e)
     pass
