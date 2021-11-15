@@ -601,7 +601,7 @@ def onBackPressed():
         page = previous_page
         render(app, page.render())
     else :
-        app.destroy()
+        app.quit()
 
 def onNextPressed():
     global page, app
@@ -650,8 +650,8 @@ try :
             onNextPressed()
         elif(axis.x == -1) :
             onPrevPressed()
-except :
-    print("COULD NOT LOAD CONTROLLER")
+except Exception as e :
+    print(e)
     pass
     
 # Driver Code
