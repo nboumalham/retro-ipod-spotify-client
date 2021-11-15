@@ -2,4 +2,4 @@ spotipy
 redis
 pillow
 xbox360
-alsaaudio
+pyalsaaudio
