@@ -175,7 +175,8 @@ def refresh_devices(out_queue = None):
     results = sp.devices()
     DATASTORE.clearDevices()
     for _, item in enumerate(results['devices']):
-        if "Pipod 2" in item['name']:
+        if "Pipod" in item['name']:
+            print("found you")
             device = UserDevice(item['id'], item['name'], item['is_active'])
             DATASTORE.setUserDevice(device)
     if(out_queue is not None) :
