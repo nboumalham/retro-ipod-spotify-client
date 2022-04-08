@@ -8,7 +8,7 @@ from config import logger
 
 class SystemController():
     def __init__(self):
-        self.system_volume = 100 alsaaudio.Mixer().getvolume()[0]
+        self.system_volume = alsaaudio.Mixer().getvolume()[0]
 
     def get_volume(self):
         return self.system_volume
