@@ -1,6 +1,4 @@
 spotipy
 redis
 pillow
-xbox360
-pyalsaaudio
 pulsectl

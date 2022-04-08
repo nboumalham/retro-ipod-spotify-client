@@ -16,7 +16,7 @@ from sys import platform
 import os
 from base_frame import *
 from config import *
-from xbox360controller import Xbox360Controller
+#from xbox360controller import Xbox360Controller
 
 UP_KEY_CODE = 8255233 if platform == "darwin" else 111
 DOWN_KEY_CODE = 8320768 if platform == "darwin" else 116
@@ -654,6 +654,7 @@ try :
     print("[Controller] Xbox Controller set correctly")
 except Exception as e :
     print(e)
+    print("it's okay though")
     pass
     
 # Driver Code
