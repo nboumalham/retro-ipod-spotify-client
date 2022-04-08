@@ -25,20 +25,19 @@ class SystemController():
 
 class Audioctl():
     def __init__(self):
-        self.pulse = 1 #pulsectl.Pulse('my-client-name')
+        self.pulse = pulsectl.Pulse('my-client-name')
 
     def get_audio_output_devices(self):
-        #result = self.pulse.sink_list()
+        result = self.pulse.sink_list()
         output_devices = []
-        #for path in result:
-        #    output_devices.append({'name': path.description, 'index' : path.index, 'connected' : True})
+        for path in result:
+            output_devices.append({'name': path.description, 'index' : path.index, 'connected' : True})
         return output_devices
 
     def select(self, device):
-        poop = 1
-	#result = self.pulse.sink_input_list()
-        #for path in result:
-        #    self.pulse.sink_input_move(path.index ,device['index'])
+        result = self.pulse.sink_input_list()
+        for path in result:
+            self.pulse.sink_input_move(path.index ,device['index'])
 
 class Bluetoothctl():
 
