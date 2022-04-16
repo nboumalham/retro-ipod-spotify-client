@@ -3,13 +3,13 @@ import threading
 from config import TEST_ENV
 import time
 from config import logger
-#import alsaaudio
+import alsaaudio
 import dbus
 
 
 class SystemController():
     def __init__(self):
-        self.system_volume = 100 #alsaaudio.Mixer().getvolume()[0]
+        self.system_volume = alsaaudio.Mixer().getvolume()[0]
 
     def get_volume(self):
         return self.system_volume
@@ -20,9 +20,9 @@ class SystemController():
         self.system_volume = vol
 
     def __set_system_volume(self, vol):
-        #m = alsaaudio.Mixer()
-        #m.setvolume(vol)
-        self.m = 100
+        m = alsaaudio.Mixer()
+        m.setvolume(vol)
+        #self.m = 100
 
 
 class Audioctl():
