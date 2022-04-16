@@ -127,23 +127,32 @@ def get_playlist(id):
     return (UserPlaylist(results['name'], 0, results['uri'], len(tracks)), tracks) # return playlist index as 0 because it won't have a idx parameter when fetching directly from Spotify (and we don't need it here anyway)
 
 def get_show(id):
-    results = sp.show(id)
-    show = results['name']
-    publisher = results['publisher']
-    episodes = []
-    for _, item in enumerate(results['episodes']['items']):
-        episodes.append(UserEpisode(item['name'], publisher, show, item['uri']))
-    return (UserShow(results['name'], publisher, len(episodes), results['uri']), episodes)
+    try : 
+        results = sp.show(id)
+        show = results['name']
+        publisher = results['publisher']
+        episodes = []
+        for _, item in enumerate(results['episodes']['items']):
+            episodes.append(UserEpisode(item['name'], publisher, show, item['uri']))
+        return (UserShow(results['name'], publisher, len(episodes), results['uri']), episodes)
+    except spotipy.exceptions.SpotifyException :
+        logger.error("Show id error " + id)
+        return (UserShow("<Error>", "<Error>", 0, "xxxxxxxx"), [])
+
 
 def get_album(id):
     # TODO optimize query
-    results = sp.album(id)
-    album = results['name']
-    artist = results['artists'][0]['name']
-    tracks = []
-    for _, item in enumerate(results['tracks']['items']):
-        tracks.append(UserTrack(item['name'], artist, album, item['uri']))
-    return (UserAlbum(results['name'], artist, len(tracks), results['uri']), tracks)
+    try :
+        results = sp.album(id)
+        album = results['name']
+        artist = results['artists'][0]['name']
+        tracks = []
+        for _, item in enumerate(results['tracks']['items']):
+            tracks.append(UserTrack(item['name'], artist, album, item['uri']))
+        return (UserAlbum(results['name'], artist, len(tracks), results['uri']), tracks)
+    except spotipy.exceptions.SpotifyException :
+        logger.error("Album id error " + id)
+        return (UserAlbum("<Error>", "<Error>", 0, "XXXXXXXX"), [])
 
 def get_playlist_tracks(id):
     tracks = []

@@ -48,7 +48,7 @@ class BootRendering(Rendering):
         if not page.callback:
             return
         elif (not page.loading and not page.loaded ):
-            if(not TEST_ENV) :
+            if(TEST_ENV) :
                 self.load_spotify(page)
             else : page.loaded = True
         else :

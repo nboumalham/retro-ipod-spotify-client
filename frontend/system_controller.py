@@ -60,7 +60,6 @@ class Bluetoothctl():
         device_path = f"{self.adapter_path}/dev_{addr.replace(':', '_')}"
         result = []
         for obj in objects :
-            print(obj.path())
             if obj["path"] == device_path:
                 result.append(obj)
         return result
@@ -80,7 +79,6 @@ class Bluetoothctl():
         # we need a dbus object manager
         manager = self.proxyobj(self.bus, "/", "org.freedesktop.DBus.ObjectManager")
         objects = manager.GetManagedObjects()
-        print("getting paired devices")
         # once we get the objects we have to pick the bluetooth devices.
         # They support the org.bluez.Device1 interface
         devices = self.filter_by_interface(objects, "org.bluez.Device1")
@@ -112,16 +110,16 @@ class Bluetoothctl():
 
     def toggle(self, device):
         if(device['connected']):
-            print(device['name'] + " was connected. Disconnecting")
+            logger.debug(device['name'] + " was connected. Disconnecting")
             return self.disconnect(device['addr'])
         else :
-            print(device['name'] + " was disconnected. Connecting")
+            logger.debug(device['name'] + " was disconnected. Connecting")
             return self.connect(device['addr'])
 
     def disconnect(self, addr):
         device_path = f"{self.adapter_path}/dev_{addr.replace(':', '_')}"
         adapter = dbus.Interface(self.bus.get_object("org.bluez", device_path), "org.bluez.Device1")
-        poop = adapter.Disconnect()
+        adapter.Disconnect()
 
     def connect(self, addr):
         device_path = f"{self.adapter_path}/dev_{addr.replace(':', '_')}"
