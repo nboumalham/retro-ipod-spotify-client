@@ -2,3 +2,4 @@ spotipy
 redis
 pillow
 pulsectl
+pybluez

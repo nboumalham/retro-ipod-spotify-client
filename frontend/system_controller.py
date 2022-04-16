@@ -1,14 +1,15 @@
-import alsaaudio
 import pulsectl
 import threading
 from config import TEST_ENV
-import pydbus
 import time
 from config import logger
+#import alsaaudio
+import bluetooth
+
 
 class SystemController():
     def __init__(self):
-        self.system_volume = alsaaudio.Mixer().getvolume()[0]
+        self.system_volume = 100 #alsaaudio.Mixer().getvolume()[0]
 
     def get_volume(self):
         return self.system_volume
@@ -19,8 +20,9 @@ class SystemController():
         self.system_volume = vol
 
     def __set_system_volume(self, vol):
-        m = alsaaudio.Mixer()
-        m.setvolume(vol)
+        #m = alsaaudio.Mixer()
+        #m.setvolume(vol)
+        self.m = 100
 
 
 class Audioctl():
@@ -42,12 +44,16 @@ class Audioctl():
 class Bluetoothctl():
 
     def __init__(self):
-        self.bluez_service = 'org.bluez'
-        self.adapter_path = '/org/bluez/hci0'
+        self.poop = "hello"
 
-        self.bus = pydbus.SystemBus()
-        self.adapter = self.bus.get(self.bluez_service, self.adapter_path)
-        self.mngr = self.bus.get(self.bluez_service, '/')
+    
+    def get_visible_devices(self):
+        nearby_devices = bluetooth.discover_devices(lookup_names=True)
+        devices = []
+        for icon, addr, name, connected in nearby_devices:
+            devices.append({'name': name, 'mac_address' : addr, 'icon' : 'low', 'connected' : False})
+        return devices
+
 
     def get_paired_devices(self):
         return self.get_devices('Paired')

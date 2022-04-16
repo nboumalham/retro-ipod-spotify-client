@@ -17,7 +17,7 @@ try:
     import RPi.GPIO as gpio
     TEST_ENV = False
 except:
-    TEST_ENV = True
+    TEST_ENV = False
     gpio = None
 
 SCALE = SCREEN_HEIGHT / 1060
