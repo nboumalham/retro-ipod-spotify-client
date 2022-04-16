@@ -63,7 +63,7 @@ class BootRendering(Rendering):
         if(not TEST_ENV) :
             thread1 = threading.Thread(target = spotify_manager.refresh_data, args=(page.my_queue,))
         else :
-            thread1 = threading.Thread(target = spotify_manager.refresh_devices, args=(page.my_queue,))
+            thread1 = threading.Thread(target = spotify_manager.refresh_data, args=(page.my_queue,))
         thread1.start()
 
     def unsubscribe(self):

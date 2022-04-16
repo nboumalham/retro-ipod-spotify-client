@@ -80,7 +80,7 @@ class Bluetoothctl():
         # we need a dbus object manager
         manager = self.proxyobj(self.bus, "/", "org.freedesktop.DBus.ObjectManager")
         objects = manager.GetManagedObjects()
-
+        print("getting paired devices")
         # once we get the objects we have to pick the bluetooth devices.
         # They support the org.bluez.Device1 interface
         devices = self.filter_by_interface(objects, "org.bluez.Device1")
@@ -89,11 +89,13 @@ class Bluetoothctl():
         bt_devices = []
         for device in devices:
             obj = self.proxyobj(self.bus, device, 'org.freedesktop.DBus.Properties')
+                    
+            connected = str(obj.Get("org.bluez.Device1", "Connected"))
             bt_devices.append({
-                "name": str(obj.Get("org.bluez.Device1", "Connected")) + " - " + str(obj.Get("org.bluez.Device1", "Name")),
+                "name": ('☑ ' if connected else '☐ ') + str(obj.Get("org.bluez.Device1", "Name")),
                 "addr": str(obj.Get("org.bluez.Device1", "Address")),
                 "connected" : str(obj.Get("org.bluez.Device1", "Connected")),
-                "icon" : str(obj.Get("org.bluez.Device1", "Connected"))
+                "icon" : str(obj.Get("org.bluez.Device1", "Icon"))
             }) 
         return bt_devices
 
