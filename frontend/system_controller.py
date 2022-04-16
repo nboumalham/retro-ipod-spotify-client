@@ -90,7 +90,7 @@ class Bluetoothctl():
         for device in devices:
             obj = self.proxyobj(self.bus, device, 'org.freedesktop.DBus.Properties')
             bt_devices.append({
-                "name": str(obj.Get("org.bluez.Device1", "Name")),
+                "name": str(obj.Get("org.bluez.Device1", "Connected")) + " - " + str(obj.Get("org.bluez.Device1", "Name")),
                 "addr": str(obj.Get("org.bluez.Device1", "Address")),
                 "connected" : str(obj.Get("org.bluez.Device1", "Connected")),
                 "icon" : str(obj.Get("org.bluez.Device1", "Connected"))
@@ -110,19 +110,18 @@ class Bluetoothctl():
 
     def toggle(self, device):
         if(device['connected']):
-            logger.debug(device['name'] + " was connected. Disconnecting")
+            print(device['name'] + " was connected. Disconnecting")
             return self.disconnect(device['addr'])
         else :
-            logger.debug(device['name'] + " was disconnected. Connecting")
+            print(device['name'] + " was disconnected. Connecting")
             return self.connect(device['addr'])
 
     def disconnect(self, addr):
         device_path = f"{self.adapter_path}/dev_{addr.replace(':', '_')}"
-        adapter = dbus.Interface(
-        self.bus.get_object("org.bluez", device_path), "org.bluez.Device1")
-        adapter.Disconnect()
+        adapter = dbus.Interface(self.bus.get_object("org.bluez", device_path), "org.bluez.Device1")
+        poop = adapter.Disconnect()
 
-    def disconnect(self, addr):
+    def connect(self, addr):
         device_path = f"{self.adapter_path}/dev_{addr.replace(':', '_')}"
         adapter = dbus.Interface(
         self.bus.get_object("org.bluez", device_path), "org.bluez.Device1")
