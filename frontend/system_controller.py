@@ -4,7 +4,7 @@ from config import TEST_ENV
 import time
 from config import logger
 #import alsaaudio
-import bluetooth
+import dbus
 
 
 class SystemController():
@@ -44,49 +44,86 @@ class Audioctl():
 class Bluetoothctl():
 
     def __init__(self):
-        self.poop = "hello"
+        self.bus = dbus.SystemBus()
+        self.bluez_service = 'org.bluez'
+        self.adapter_path = '/org/bluez/hci0'
 
-    
-    def get_visible_devices(self):
+    def proxyobj(self, bus, path, interface):
+        """ commodity to apply an interface to a proxy object """
+        obj = self.bus.get_object('org.bluez', path)
+        return dbus.Interface(obj, interface)
+
+
+    def filter_by_addr(self, objects, addr):
+        """ filters the objects based on their support
+        for the specified interface """
+        device_path = f"{self.adapter_path}/dev_{addr.replace(':', '_')}"
+        result = []
+        for obj in objects :
+            print(obj.path())
+            if obj["path"] == device_path:
+                result.append(obj)
+        return result
+
+    def filter_by_interface(self, objects, interface_name):
+        """ filters the objects based on their support
+        for the specified interface """
+        result = []
+        for path in objects.keys():
+            interfaces = objects[path]
+            for interface in interfaces.keys():
+                if interface == interface_name:
+                    result.append(path)
+        return result
+
+    def get_paired_devices(self):
+        # we need a dbus object manager
+        manager = self.proxyobj(self.bus, "/", "org.freedesktop.DBus.ObjectManager")
+        objects = manager.GetManagedObjects()
+
+        # once we get the objects we have to pick the bluetooth devices.
+        # They support the org.bluez.Device1 interface
+        devices = self.filter_by_interface(objects, "org.bluez.Device1")
+        # now we are ready to get the informations we need
+        
+        bt_devices = []
+        for device in devices:
+            obj = self.proxyobj(self.bus, device, 'org.freedesktop.DBus.Properties')
+            bt_devices.append({
+                "name": str(obj.Get("org.bluez.Device1", "Name")),
+                "addr": str(obj.Get("org.bluez.Device1", "Address")),
+                "connected" : str(obj.Get("org.bluez.Device1", "Connected")),
+                "icon" : str(obj.Get("org.bluez.Device1", "Connected"))
+            }) 
+        return bt_devices
+
+    def dicover_devices(self, filter):
         nearby_devices = bluetooth.discover_devices(lookup_names=True)
         devices = []
-        for icon, addr, name, connected in nearby_devices:
+        for addr, name in nearby_devices:
             devices.append({'name': name, 'mac_address' : addr, 'icon' : 'low', 'connected' : False})
         return devices
 
 
-    def get_paired_devices(self):
-        return self.get_devices('Paired')
-
     def get_connected_devices(self):
         return self.get_devices('Connected')
-
-    def get_devices(self, filter):
-        mngd_objs = self.mngr.GetManagedObjects()
-        paired_devices = []
-        for path in mngd_objs:
-            con_state = mngd_objs[path].get('org.bluez.Device1', {}).get(filter, False)
-            if con_state:
-                icon = mngd_objs[path].get('org.bluez.Device1', {}).get('Icon')
-                connected = mngd_objs[path].get('org.bluez.Device1', {}).get('Connected')
-                name = ('☑ ' if connected else '☐ ')  + mngd_objs[path].get('org.bluez.Device1', {}).get('Name')
-                paired_devices.append({'name': name, 'mac_address' : addr, 'icon' : icon, 'connected' : connected})
-        return paired_devices
 
     def toggle(self, device):
         if(device['connected']):
             logger.debug(device['name'] + " was connected. Disconnecting")
-            return self.disconnect(device['mac_address'])
+            return self.disconnect(device['addr'])
         else :
             logger.debug(device['name'] + " was disconnected. Connecting")
-            return self.connect(device['mac_address'])
+            return self.connect(device['addr'])
 
-    def disconnect(self, mac_address):
-        device_path = f"{self.adapter_path}/dev_{mac_address.replace(':', '_')}"
-        device = self.bus.get(self.bluez_service, device_path)
-        device.Disconnect()
+    def disconnect(self, addr):
+        device_path = f"{self.adapter_path}/dev_{addr.replace(':', '_')}"
+        adapter = dbus.Interface(
+        self.bus.get_object("org.bluez", device_path), "org.bluez.Device1")
+        adapter.Disconnect()
 
-    def connect(self, mac_address):
-        device_path = f"{self.adapter_path}/dev_{mac_address.replace(':', '_')}"
-        device = self.bus.get(self.bluez_service, device_path)
-        device.Connect()
+    def disconnect(self, addr):
+        device_path = f"{self.adapter_path}/dev_{addr.replace(':', '_')}"
+        adapter = dbus.Interface(
+        self.bus.get_object("org.bluez", device_path), "org.bluez.Device1")
+        adapter.Connect()

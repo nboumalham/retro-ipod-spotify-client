@@ -48,7 +48,9 @@ class BootRendering(Rendering):
         if not page.callback:
             return
         elif (not page.loading and not page.loaded ):
-            self.load_spotify(page)
+            if(not TEST_ENV) :
+                self.load_spotify(page)
+            else : page.loaded = True
         else :
             logger.debug("---------------------ARE WE HAVING DONE  YET???? ------------------------")
             page.loaded = page.my_queue.get()

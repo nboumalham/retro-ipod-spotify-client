@@ -3,3 +3,4 @@ redis
 pillow
 pulsectl
 pybluez
+dbus
