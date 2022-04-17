@@ -3,13 +3,21 @@ import threading
 from config import TEST_ENV
 import time
 from config import logger
-import alsaaudio
 import dbus
+
+try :
+    import alsaaudio
+except Exception :
+    logger.error("alsaaudio not compatible on this device")
 
 
 class SystemController():
     def __init__(self):
-        self.system_volume = alsaaudio.Mixer().getvolume()[0]
+        try:
+            self.system_volume = alsaaudio.Mixer().getvolume()[0]
+        except Exception :
+            logger.error("alsaaudio not compatible on this device")
+            self.system_volume = "--"
 
     def get_volume(self):
         return self.system_volume
@@ -20,9 +28,11 @@ class SystemController():
         self.system_volume = vol
 
     def __set_system_volume(self, vol):
-        m = alsaaudio.Mixer()
-        m.setvolume(vol)
-        #self.m = 100
+        try :
+            m = alsaaudio.Mixer()
+            m.setvolume(vol)
+        except Exception :
+            logger.error("alsaaudio not compatible on this device")
 
 
 class Audioctl():
